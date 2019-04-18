@@ -15,7 +15,7 @@ app.use(express.static('public'));
 
 if (require.main === module) {
     app.listen(process.env.PORT || 8080);
-    console.log(`App is listening on port: ${port}`)
+    console.log(`App is listening on port: 8080`)
 }
 
 module.exports = app;
