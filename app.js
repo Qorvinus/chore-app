@@ -17,6 +17,7 @@ function getAndRenderUsers() {
   getUsers(renderUsers);
 }
 
+// Why not just $(getAndRenderUsers)  ???
 $(function() {
   getAndRenderUsers();
 })
