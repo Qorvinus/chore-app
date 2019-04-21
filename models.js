@@ -9,7 +9,8 @@ const clientSchema = mongoose.Schema({
   name: {
     type: 'string',
     unique: true
-  }
+  },
+  totalValue: 'number'
 });
 
 const choreSchema = mongoose.Schema({
