@@ -20,6 +20,22 @@ const UserSchema = mongoose.Schema({
   lastName: { type: String, default: ''},
 });
 
+UserSchema.methods.serialize = function() {
+  return {
+    username: this.username || '',
+    firstName: this.firstName || '',
+    lastName: this.lastName || ''
+  };
+};
+
+UserSchema.methods.validatePassword = function(password) {
+  return bcrypt.compare(password, this.password);
+};
+
+UserSchema.statics.hashPassword = function(password) {
+  return bcrypt.has(password, 10);
+};
+
 const ClientSchema = mongoose.Schema({
   id: 'string',
   name: {
@@ -35,8 +51,10 @@ const ChoreSchema = mongoose.Schema({
   value: 'number'
 })
 
-const Clients = mongoose.model("Clients", clientSchema);
+const Clients = mongoose.model("Clients", ClientSchema);
 
-const Chores = mongoose.model("Chores", choreSchema);
+const Chores = mongoose.model("Chores", ChoreSchema);
+
+const User = mongoose.model("User", UserSchema)
 
 module.exports = { Clients, Chores, User };
