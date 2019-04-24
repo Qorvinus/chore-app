@@ -1,10 +1,26 @@
 'use strict';
 
+const bcrypt = require('bcryptsjs');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const clientSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
+  id: String,
+  userName: {
+    type: String,
+    unique: true,
+    required: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  firstName: { type: String, default: ''},
+  lastName: { type: String, default: ''},
+});
+
+const ClientSchema = mongoose.Schema({
   id: 'string',
   name: {
     type: 'string',
@@ -13,7 +29,7 @@ const clientSchema = mongoose.Schema({
   totalValue: 'number'
 });
 
-const choreSchema = mongoose.Schema({
+const ChoreSchema = mongoose.Schema({
   id: 'string',
   choreName: 'string',
   value: 'number'
@@ -23,4 +39,4 @@ const Clients = mongoose.model("Clients", clientSchema);
 
 const Chores = mongoose.model("Chores", choreSchema);
 
-module.exports = { Clients, Chores };
+module.exports = { Clients, Chores, User };
