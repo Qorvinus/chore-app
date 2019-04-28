@@ -1,7 +1,8 @@
 'use strict';
 
 let USERS = {
-    {
+  "users": [
+      {
       id: "111aaa",
       userName: "Bob",
       password: "password",
@@ -15,24 +16,28 @@ let USERS = {
       firstName: "Sally",
       lastName: "Student"
     }
+  ]
 }
 
 let CLIENTS = {
+  "clients": [
     {
       id: "111111",
       name: "John"
     },
     {
       id: "222222",
-      user: "Billy"
+      name: "Billy"
     },
     {
       id: "333333",
-      user: "Sarah"
+      name: "Sarah"
     }
+  ]
 };
 
 let CHORES = {
+  "chores": [
     {
       id: "aaaaaa",
       chore: "Dishes",
@@ -48,33 +53,42 @@ let CHORES = {
       chore: "Litter Box",
       value: 3
     }
+  ]
 };
 
-function getUsers(callback) {
+function getClients(callback) {
   setTimeout(function() {
     callback(CLIENTS)
   }, 1);
 }
 
-function renderUsers(CLIENTS) {
-  for (let i = 0; i < CLIENTS.clients.length; i++) {
-    $('#js-render-users').append(`<input type="button" value="${CLIENTS.clients[i].name}>"`);
+function getChores(callback) {
+  setTimeout(function() {
+    callback(CHORES)
+  }, 1);
+}
+
+function renderClients(data) {
+  for (let i = 0; i < data.clients.length; i++) {
+    $('#js-render-clients').append(`<input type="button" value="${data.clients[i].name}">`);
   };
 }
 
-function getAndRenderUsers() {
-  getUsers(renderUsers);
+function renderChores(data) {
+  for (let i = 0; i < data.chores.length; i++) {
+    $('#js-render-chores').append(`<li>${data.chores[i].chore}: $${data.chores[i].value}`)
+  }
 }
 
-//function for testing, reloads page
-function reloadPage() {
-  $('#js-reload').on('click', function(event) {
-    event.preventDefault();
-    location.reload();
-  })
+function getAndRenderClients() {
+  getClients(renderClients);
+}
+
+function getAndRenderChores() {
+  getChores(renderChores);
 }
 
 $(function() {
-  getAndRenderUsers();
-  reloadPage();
+  getAndRenderClients();
+  getAndRenderChores();
 })
