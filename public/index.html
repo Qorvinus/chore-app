@@ -9,13 +9,26 @@
   src="https://code.jquery.com/jquery-3.4.0.min.js"
   integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
   crossorigin="anonymous"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
-    <p>Clients:</p>
+    <header role="navigation">
+      <div class="nav">
+        <span class="logo"><a href="index.html">Logo</a><span>
+      <div class="login">
+        <span class="userName">User Name:<input type="text" name="userName"></span>
+        <span class="password">Password:<input type="text" name="password"></span>
+        <input id="js-login" type="submit" value="Log in">
+      </div>
+      </div>
+    </header>
+  <div class="container">
+    <div>Clients:</div>
     <div id="js-render-clients"></div>
-    <p>Chores:</p>
+    <div>Chores:</div>
     <ul id="js-render-chores"></ul>
+  </div>
     <script type="text/javascript" src="app.js"></script>
 </body>
 </html>

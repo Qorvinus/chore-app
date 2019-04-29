@@ -88,7 +88,12 @@ function getAndRenderChores() {
   getChores(renderChores);
 }
 
+userLogin(userName, password) {
+
+}
+
 $(function() {
   getAndRenderClients();
   getAndRenderChores();
+  userLogin(userName, password);
 })

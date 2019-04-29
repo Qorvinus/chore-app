@@ -1,0 +1,12 @@
+
+.login {
+  float: right;
+}
+
+.logo {
+  float: left;
+}
+
+.nav {
+  display: inline-block;
+}
