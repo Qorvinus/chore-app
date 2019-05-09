@@ -1,6 +1,6 @@
 'use strict';
 
-const bcrypt = require('bcryptsjs');
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -36,6 +36,11 @@ UserSchema.statics.hashPassword = function(password) {
   return bcrypt.has(password, 10);
 };
 
+const ChoreSchema = mongoose.Schema({
+  choreName: String,
+  value: Number
+})
+
 const ClientSchema = mongoose.Schema({
   //id will be created by mongo
   name: {
@@ -45,11 +50,6 @@ const ClientSchema = mongoose.Schema({
   chores: [ChoreSchema],
   totalValue: Number
 });
-
-const ChoreSchema = mongoose.Schema({
-  choreName: String,
-  value: Number
-})
 
 const Clients = mongoose.model("Clients", ClientSchema);
 

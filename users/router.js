@@ -2,11 +2,11 @@
 
 const express = require('express');
 
-const bodyParser = reequire('body-parser');
+const bodyParser = require('body-parser');
 
 const { User } = require('./models');
 
-const router = express.router();
+const router = express.Router();
 
 const jasonParser = bodyParser.json();
 

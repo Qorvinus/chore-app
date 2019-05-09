@@ -109,7 +109,7 @@ function logoClick() {
 }
 
 function signUp() {
-
+  
 }
 
 $(function() {

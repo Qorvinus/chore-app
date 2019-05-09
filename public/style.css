@@ -1,7 +1,7 @@
 
-.login {
-  float: right;
-}
+/* .login {
+  text-align: right;
+} */
 
 #logo {
   float: left;
@@ -17,4 +17,8 @@
 
 .hover:hover {
   cursor: pointer;
+}
+
+.block {
+  display: block;
 }

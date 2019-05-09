@@ -16,10 +16,10 @@ describe('/api/user', function() {
   const password = 'examplePassord';
   const firstName = 'Example';
   const lastName = 'User';
-  const username = 'exampleUserB';
-  const password = 'examplePassordB';
-  const firstName = 'ExampleB';
-  const lastName = 'UserB';
+  const usernameB = 'exampleUserB';
+  const passwordB = 'examplePassordB';
+  const firstNameB = 'ExampleB';
+  const lastNameB = 'UserB';
 
   before(function() {
     return runServer(TEST_DATABASE_URL);

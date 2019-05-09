@@ -28,7 +28,7 @@ const localStrategy = new LocalStrategy((username, password, callback) => {
           message: 'Incorrect username or password'
         });
       }
-      return callback(null, user0;)
+      return callback(null, user)
     })
     .catch(err => {
       if (err.reason === 'LoginError') {
