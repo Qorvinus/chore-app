@@ -3,10 +3,18 @@
   float: right;
 }
 
-.logo {
+#logo {
   float: left;
 }
 
 .nav {
   display: inline-block;
+}
+
+.hidden {
+  display: none;
+}
+
+.hover:hover {
+  cursor: pointer;
 }

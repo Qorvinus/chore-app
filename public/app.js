@@ -88,12 +88,34 @@ function getAndRenderChores() {
   getChores(renderChores);
 }
 
-function userLogin(userName, password) {
+//function userLogin(userName, password) {
+
+//}
+
+function renderSignUp() {
+  $('#js-go-signup').on('click', function(event) {
+    event.preventDefault();
+    $('.js-homepage-container').addClass('hidden');
+    $('.js-signup-container').removeClass('hidden');
+    signUp();
+  })
+}
+
+function logoClick() {
+  $('#logo').on('click', function(event) {
+    event.preventDefault();
+    location.reload()
+  })
+}
+
+function signUp() {
 
 }
 
 $(function() {
   getAndRenderClients();
   getAndRenderChores();
-  userLogin(userName, password);
+  //userLogin(userName, password);
+  renderSignUp();
+  logoClick();
 })

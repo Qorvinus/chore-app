@@ -15,20 +15,53 @@
 <body>
     <header role="navigation">
       <div class="nav">
-        <span class="logo"><a href="index.html">Logo</a><span>
+        <span id="logo" class="hover">Logo</span>
+
         <div class="login">
-          <span class="userName">User Name:<input type="text" name="userName"></span>
-          <span class="password">Password:<input type="text" name="password"></span>
-          <input id="js-login" type="submit" value="Log in">
+          <form id="js-login">
+            <span class="userName ">User Name:<input type="text" name="userName"></span>
+            <span class="password">Password:<input type="text" name="password"></span>
+            <input id="js-login-button" type="submit" value="Log in">
+          </form>
         </div>
+
+        <div class="second-nav hidden">
+          <span class="home hover">Home</span>
+          <span class="add-client hover">Add Clients</span>
+          <span class="add-chore hover">Add Chores</span>
+          <span class="logout hover">Logout</span>
+        </div>
+
       </div>
     </header>
-  <div class="container">
+
+  <div class="homepage-container js-homepage-container">
+    <h1>About</h1>
+    <p>Have you ever wanted to track what chores your kids are completing and how much allowance they've made?</p>
+    <p>You're in luck!  This web app helps you track their chores as well as their allowance!</p>
+    <input id="js-go-signup" type="button" value="Sign Up Here!">
+  </div>
+
+  <div class="signup-container js-signup-container hidden">
+    <form id="js-singup">
+      <span>First Name:</span>
+      <input type="text">
+      <span>Last Name:</span>
+      <input type="text">
+      <span>User Name:</span>
+      <input type="text">
+      <span>Password:</span>
+      <input type="test">
+      <input id="js-signup-button" type="submit" value="Sing-UP!">
+    </form>
+  </div>
+
+  <div class="dashboard-container js-dashboard-container hidden">
     <div>Clients:</div>
     <div id="js-render-clients"></div>
     <div>Chores:</div>
     <ul id="js-render-chores"></ul>
   </div>
-    <script type="text/javascript" src="app.js"></script>
+  <script type="text/javascript" src="app.js"></script>
 </body>
 </html>
