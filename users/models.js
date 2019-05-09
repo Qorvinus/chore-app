@@ -37,18 +37,18 @@ UserSchema.statics.hashPassword = function(password) {
 };
 
 const ClientSchema = mongoose.Schema({
-  id: 'string',
+  //id will be created by mongo
   name: {
-    type: 'string',
+    type: String,
     unique: true
   },
-  totalValue: 'number'
+  chores: [ChoreSchema],
+  totalValue: Number
 });
 
 const ChoreSchema = mongoose.Schema({
-  id: 'string',
-  choreName: 'string',
-  value: 'number'
+  choreName: String,
+  value: Number
 })
 
 const Clients = mongoose.model("Clients", ClientSchema);

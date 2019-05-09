@@ -88,7 +88,7 @@ function getAndRenderChores() {
   getChores(renderChores);
 }
 
-userLogin(userName, password) {
+function userLogin(userName, password) {
 
 }
 
