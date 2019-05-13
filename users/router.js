@@ -8,16 +8,16 @@ const { User } = require('./models');
 
 const router = express.Router();
 
-const jasonParser = bodyParser.json();
+const jsonParser = bodyParser.json();
 
-router.post('/', jasonParser, (req, res) => {
-  const requireFields = ['username', 'password'];
+router.post('/signup', jsonParser, (req, res, next) => {
+  const requireFields = ['username', 'password', 'firstName', 'lastName'];
   const missingField = requireFields.find(field => !(field in req.body));
 
   if (missingField) {
     return res.status(422).json({
       code: 422,
-      reason: 'ValidateError',
+      reason: 'ValidationError',
       message: 'Missing field',
       location: missingField
     });
@@ -31,7 +31,7 @@ router.post('/', jasonParser, (req, res) => {
   if (nonStringField) {
     return res.status(422).json({
       code: 422,
-      reason: 'ValidateError',
+      reason: 'ValidationError',
       message: 'Incorrect field type: expected string',
       location: nonStringField
     });
@@ -45,7 +45,7 @@ router.post('/', jasonParser, (req, res) => {
   if (nonTrimmedField) {
     return res.status(422).json({
       code: 422,
-      reason: 'ValidateError',
+      reason: 'ValidationError',
       message: 'Cannot start or end with whitespace',
       location: nonTrimmedField
     });
@@ -74,7 +74,7 @@ router.post('/', jasonParser, (req, res) => {
   if (tooSmallField || tooLargeField) {
     return res.status(422).json({
       code: 422,
-      reason: 'ValidateError',
+      reason: 'ValidationError',
       message: tooSmallField
         ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
         : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
@@ -93,34 +93,39 @@ router.post('/', jasonParser, (req, res) => {
       if (count > 0) {
         return Promise.reject({
           code: 422,
-          reason: 'ValidateError',
+          reason: 'ValidationError',
           message: 'Username already taken',
-          location: 'username'
+          location: username
         });
       }
 
       return User.hashPassword(password);
     })
     .then(hash => {
-      return User.create({
+      const newUser = {
         username,
         password: hash,
         firstName,
         lastName
-      });
+      }
+      return User.create(newUser);
+      console.log(newUser);
     })
     .then(user => {
       return res.status(201).json(user.serialize());
     })
     .catch(err => {
-      if (err.reason === 'ValidateError') {
+      if (err.reason === 'ValidationError') {
         return res.status(err.code).json(err);
       }
-      res.status(500).json({code: 500, message: 'Internal server error'});
-    });
+      res.status(500).json({code: 500, message: 'Internal server error'})
+      next(err);
+    })
 });
 
-router.get('/', (req, res) => {
+
+//remove me later after testing complete
+router.get('/users', (req, res) => {
   return User.find()
     .then(users => res.json(users.map(user => user.serialize())))
     .catch(err => res.status(500).json({message: 'Internal server error'}));

@@ -4,14 +4,14 @@ let USERS = {
   "users": [
       {
       id: "111aaa",
-      userName: "Bob",
+      username: "Bob",
       password: "password",
       firstName: "Bob",
       lastName: "Bobby"
     },
     {
       id: "222bbb",
-      userName: "Sally",
+      username: "Sally",
       password: "password",
       firstName: "Sally",
       lastName: "Student"
@@ -88,7 +88,7 @@ function getAndRenderChores() {
   getChores(renderChores);
 }
 
-//function userLogin(userName, password) {
+//function userLogin(username, password) {
 
 //}
 
@@ -109,13 +109,37 @@ function logoClick() {
 }
 
 function signUp() {
-  
+  $('#js-signup-button').on('click', function(event) {
+    event.preventDefault();
+    const firstName = $('#js-first-name').val();
+    const lastName = $('#js-last-name').val();
+    const username = $('#js-user-name').val();
+    const password = $('#js-password').val();
+    //add validation(ideally both)
+    const data = {
+      firstName: firstName,
+      lastName: lastName,
+      username: username,
+      password: password
+    }
+    const url = 'http://localhost:8080/api/users/signup';
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(response => console.log('Success:', JSON.stringify(response)))
+    .catch(err => console.error('Error', err));
+  })
 }
 
 $(function() {
   getAndRenderClients();
   getAndRenderChores();
-  //userLogin(userName, password);
+  //userLogin(username, password);
   renderSignUp();
   logoClick();
 })

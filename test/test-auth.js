@@ -165,7 +165,7 @@ describe('Auth endpoints', function() {
       const token = jwt.sign(
         {
           user: {
-            userName,
+            username,
             firstName,
             lastName
           },
@@ -174,7 +174,7 @@ describe('Auth endpoints', function() {
         JWT_SECRET,
         {
           algorithm: 'HS256',
-          subject: userName
+          subject: username
         }
       );
 
