@@ -36,6 +36,14 @@ const UserSchema = mongoose.Schema({
 
 // [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clients' }]
 
+ClientSchema.methods.serialize = function() {
+  return {
+    id: this._id,
+    name: this.name,
+    chore: this.chore
+  };
+}
+
 UserSchema.methods.serialize = function() {
   return {
     id: this._id,

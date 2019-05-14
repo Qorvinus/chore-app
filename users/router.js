@@ -202,7 +202,23 @@ router.delete('/:id', jwtAuth, (req, res) => {
     });
 })
 
-
+router.get('/client', jwtAuth, (req, res) => {
+  User
+    .findById(req.body.user_id)
+    .then(user => {
+      if (user) {
+        Client
+          .find()
+          .then(clients => {
+            res.json(clients.map(client => client.serialize()));
+          })
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+      };
+    });
+})
 
 //remove me later after testing complete
 router.get('/users', (req, res) => {
