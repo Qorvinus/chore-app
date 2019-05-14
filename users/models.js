@@ -14,7 +14,7 @@ const ClientSchema = mongoose.Schema({
   name: {
     type: String,
   },
-  chores: [ChoreSchema], //this is embeding schema, change to reference instead.
+  chores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chore'}],
   totalValue: Number
 });
 
@@ -50,7 +50,8 @@ UserSchema.methods.serialize = function() {
     username: this.username,
     firstName: this.firstName,
     lastName: this.lastName,
-    client: this.client
+    client: this.client,
+    chore: this.chore
   };
 };
 
