@@ -2,15 +2,15 @@
 
 const express = require('express');
 
-const bodyParser = require('body-parser');
+const passport = require('passport');
 
-const { User } = require('./models');
+const { User, Client, Chore } = require('./models');
 
 const router = express.Router();
 
-const jsonParser = bodyParser.json();
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
-router.post('/signup', jsonParser, (req, res, next) => {
+router.post('/signup', (req, res, next) => {
   const requireFields = ['username', 'password', 'firstName', 'lastName'];
   const missingField = requireFields.find(field => !(field in req.body));
 
@@ -122,6 +122,86 @@ router.post('/signup', jsonParser, (req, res, next) => {
       next(err);
     })
 });
+
+router.post('/client', jwtAuth, (req, res) => {
+  //res.json(req.user);//return from token and responded.
+  const requireFields = ['user_id', 'name'];
+  const missingField = requireFields.find(field => !(field in req.body));
+
+  if (missingField) {
+    return res.status(422).json({
+      code: 422,
+      reason: 'ValidationError',
+      message: 'Missing field',
+      location: missingField
+    });
+  }
+
+  User
+    .findById(req.body.user_id)
+    .then(user => {
+      if (user) {
+        Client
+          .create({
+            name: req.body.name,
+            totalValue: 0
+          })
+          .then(client => {
+            return User.findByIdAndUpdate(user.id, {$push:{'client': client.id}})
+          })
+          .then(user => res.status(201).json(user.serialize()))
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+      } else {
+        const message = 'User not found';
+        console.error(message);
+        return res.status(400).send(message);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+})
+
+router.put('/client/:id', jwtAuth, (req, res) => {
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    res.status(400).json({
+      error: 'Request path id and request body id values must match'
+    });
+  }
+
+  const updated = {};
+  const updateableFields = ['name', 'chore'];
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      updated[field] = req.body[field];
+    }
+  });
+
+  Client
+    .findByIdAndUpdate(req.params.id, { $set: updated }, { new: true })
+    .then(updatedClient => res.status(204).end())
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
+})
+
+router.delete('/:id', jwtAuth, (req, res) => {
+  User
+    .findById(req.body.user_id)
+    .then(user => {
+      if (user) {
+        Client
+          .findByIdAndRemove(req.body.client_id)
+          .then(() => {
+            console.log(`Deleted client with id ${req.body.client_id}`);
+            res.status(204).end();
+          });
+      };
+    });
+})
+
 
 
 //remove me later after testing complete

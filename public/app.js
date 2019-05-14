@@ -120,7 +120,9 @@ function signUp() {
       firstName: firstName,
       lastName: lastName,
       username: username,
-      password: password
+      password: password,
+      user_id: user_id,
+
     }
     const url = 'http://localhost:8080/api/users/signup';
     fetch(url, {
@@ -134,6 +136,10 @@ function signUp() {
     .then(response => console.log('Success:', JSON.stringify(response)))
     .catch(err => console.error('Error', err));
   })
+}
+
+function editClient() {
+
 }
 
 $(function() {
