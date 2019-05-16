@@ -10,11 +10,16 @@ const ChoreSchema = mongoose.Schema({
   value: Number
 })
 
+// const ClientChoreSchema = mongoose.Schema({
+//   choreName: String,
+//   value: Number
+// })
+
 const ClientSchema = mongoose.Schema({
   name: {
     type: String,
   },
-  chores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chore'}],
+  chores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ClientChore'}],
   totalValue: Number
 });
 
@@ -40,7 +45,7 @@ ClientSchema.methods.serialize = function() {
   return {
     id: this._id,
     name: this.name,
-    chore: this.chore
+    totalValue: this.totalValue
   };
 }
 
@@ -69,5 +74,7 @@ const Client = mongoose.model("Clients", ClientSchema);
 const Chore = mongoose.model("Chores", ChoreSchema);
 
 const User = mongoose.model("User", UserSchema)
+
+// const ClientChore = mongoose.model("ClientChore", ClientChoreSchema);
 
 module.exports = { Client, Chore, User };

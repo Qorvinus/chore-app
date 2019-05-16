@@ -297,7 +297,26 @@ router.delete('/chore/:id', jwtAuth, (req, res) => {
     });
 })
 
+router.put('/client/value/:id', jwtAuth, (req, res) => {
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    res.status(400).json({
+      error: 'Request path id and request body id values must match'
+    });
+  }
 
+  const updated = {};
+  const updateableFields = ['totalValue'];
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      updated[field] = req.body[field];
+    }
+  });
+
+  Client
+    .findByIdAndUpdate(req.params.id, { $set: updated }, { new: true })
+    .then(updatedClient => res.status(204).end())
+    .catch(err => res.status(500).json({ message: 'Internal server error ' }));
+})
 
 //remove me later after testing complete
 router.get('/users', (req, res) => {
