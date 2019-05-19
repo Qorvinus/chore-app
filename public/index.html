@@ -17,51 +17,106 @@
       <div class="nav">
         <span id="logo" class="hover">Logo</span>
 
-        <div class="login">
-          <form id="js-login login">
-            <span class="username">User Name:<input type="text" name="username"></span>
-            <span class="password">Password:<input type="text" name="password"></span>
-            <input id="js-login-button" class="login-button" type="submit" value="Log in">
-          </form>
+        <div class="login-nav">
+          <input type="submit" value="Login" id="js-go-login-button">
         </div>
 
-        <div class="second-nav hidden">
-          <span class="home hover">Home</span>
-          <span class="add-client hover">Add Clients</span>
-          <span class="add-chore hover">Add Chores</span>
-          <span class="logout hover">Logout</span>
+        <div class="dashboard-nav hidden">
+          <span class="js-go-home-button home hover">Home</span>
+          <span class="js-go-add-client-button add-client hover">Add Clients</span>
+          <span class="js-go-add-chore-button add-chore hover">Add Chores</span>
+          <span class="js-go-edit-chore-button edit-chore hover">Edit Chores</span>
+          <span class="js-logout logout hover">
+            <a href="http://localhost:8080/logout">Logout</a>
+          </span>
         </div>
 
       </div>
     </header>
 
-  <div class="homepage-container js-homepage-container">
+  <section role="section" class="homepage-container" id="js-homepage-container">
     <h1>About</h1>
     <p>Have you ever wanted to track what chores your kids are completing and how much allowance they've made?</p>
     <p>You're in luck!  This web app helps you track their chores as well as their allowance!</p>
-    <input id="js-go-signup" type="button" value="Sign Up Here!">
-  </div>
+    <input id="js-go-signup-button" type="button" value="Sign Up Here!">
+  </section>
 
-  <div class="signup-container js-signup-container hidden">
-    <form id="js-singup">
-      <span class="block">First Name:</span>
-      <input type="text" id="js-first-name">
-      <span class="block">Last Name:</span>
-      <input type="text" id="js-last-name">
-      <span class="block">User Name:</span>
-      <input type="text" id="js-user-name">
-      <span class="block">Password:</span>
-      <input type="test" id="js-password">
-      <input id="js-signup-button" type="submit" value="Sing-UP!">
+  <section role="section" class="login-container hidden" id="js-login-conatiner">
+    <form id="js-login" class="login">
+      <span class="username">User Name:<input id="js-username" type="text" name="username"></span>
+      <span class="password">Password:<input id="js-password" type="password" name="password"></span>
+      <input id="js-login-button" class="login-button" type="submit" value="Log in">
     </form>
-  </div>
+  </section>
 
-  <div class="dashboard-container js-dashboard-container hidden">
+  <section role="section" class="signup-container hidden" id="js-signup-container">
+    <form id="js-signup-form">
+      <span class="block">First Name:</span>
+      <input type="text" id="js-firstname-signup">
+      <span class="block">Last Name:</span>
+      <input type="text" id="js-lastname-signup">
+      <span class="block">User Name:</span>
+      <input type="text" id="js-username-signup">
+      <span class="block">Password:</span>
+      <input type="password" id="js-password-signup">
+      <input id="js-signup-button" type="submit" value="Sign-Up!">
+    </form>
+  </section>
+
+  <section role="section" class="dashboard-container hidden" id="js-dashboard-container">
+    <!-- Needs to be updated -->
     <div>Clients:</div>
     <div id="js-render-clients"></div>
     <div>Chores:</div>
     <ul id="js-render-chores"></ul>
-  </div>
+  </section>
+
+<section role="section" id="js-add-chore" class="add-chore hidden">
+  <!-- Add instructions -->
+  <form id="js-add-chore-form">
+    <span>Name of chore:</span>
+    <input type="text">
+    <span>Value of chore:</span>
+    <input type="number">
+    <input type="submit" value="add" id="js-add-chore-button">
+  </form>
+</section>
+
+<section role="section" id="js-add-client" class="add-client hidden">
+  <!-- Add instructions -->
+  <form id="js-add-client-form">
+    <span>Name of client:</span>
+    <input type="text">
+    <input type="submit" value="add" id="js-add-client-button">
+  </form>
+</section>
+
+<section role="section" id="js-edit-chore-list" class="edit-chore-list hidden">
+  <!-- Add instructions -->
+  <ul id="js-chore-list" class="">List of chores:</ul>
+  <!-- in app.js populate chores, w/ edit button for each -->
+</section>
+
+<section role="section" id="js-edit-chore" class="edit-chore hidden">
+  <!-- Add instructions -->
+  <form id="js-edit-chore-prop">
+    <span>Edit name of chore</span>
+    <input type="text" value="">
+    <span>Edit value of chore</span>
+    <input type="number" value="">
+    <input type="submit" value="Submit">
+  </form>
+</section>
+
+<section role="section" id="js-edit-client" class="edit-client hidden">
+  <!-- Add instructions -->
+  <form id="js-edit-client-name">
+    <span>Edit name of client</span>
+    <input type="text" value="">
+    <input type="submit" value="Submit">
+  </form>
+</section>
+
   <script type="text/javascript" src="app.js"></script>
 </body>
 </html>

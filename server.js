@@ -51,6 +51,11 @@ app.get('/api/protected', jwtAuth, (req, res) => {
   });
 })
 
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.redirect('/');
+})
+
 app.use('*', (req, res) => {
   return res.status(404).json({ message: 'Not Found' });
 })

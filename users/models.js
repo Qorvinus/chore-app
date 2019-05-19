@@ -16,10 +16,7 @@ const ChoreSchema = mongoose.Schema({
 // })
 
 const ClientSchema = mongoose.Schema({
-  name: {
-    type: String,
-  },
-  chores: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ClientChore'}],
+  name: String,
   totalValue: Number
 });
 
