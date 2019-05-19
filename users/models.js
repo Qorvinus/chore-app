@@ -38,6 +38,14 @@ const UserSchema = mongoose.Schema({
 
 // [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clients' }]
 
+ChoreSchema.methods.serialize = function() {
+  return {
+    id: this._id,
+    choreName: this.choreName,
+    value: this.value
+  };
+}
+
 ClientSchema.methods.serialize = function() {
   return {
     id: this._id,

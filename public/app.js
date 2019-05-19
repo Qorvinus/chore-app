@@ -1,6 +1,6 @@
 'use strict';
 
-localStorage.setItem('authToken');
+localStorage.setItem('authToken', 'user_id');
 
 // const CHORES = {};
 // const CLIENTS = {};
@@ -17,25 +17,25 @@ localStorage.setItem('authToken');
 //   }, 1);
 // }
 
-function renderClients(data) {
-  for (let i = 0; i < data.clients.length; i++) {
-    $('#js-render-clients').append(`<input type="button" value="${data.clients[i].name}">`);
-  };
-}
-
-function renderChores(data) {
-  for (let i = 0; i < data.chores.length; i++) {
-    $('#js-render-chores').append(`<li>${data.chores[i].chore}: $${data.chores[i].value}`)
-  }
-}
-
-function getAndRenderClients() {
-  getClients(renderClients);
-}
-
-function getAndRenderChores() {
-  getChores(renderChores);
-}
+// function renderClients(data) {
+//   for (let i = 0; i < data.clients.length; i++) {
+//     $('#js-render-clients').append(`<input type="button" value="${data.clients[i].name}">`);
+//   };
+// }
+//
+// function renderChores(data) {
+//   for (let i = 0; i < data.chores.length; i++) {
+//     $('#js-render-chores').append(`<li>${data.chores[i].chore}: $${data.chores[i].value}`)
+//   }
+// }
+//
+// function getAndRenderClients() {
+//   getClients(renderClients);
+// }
+//
+// function getAndRenderChores() {
+//   getChores(renderChores);
+// }
 
 function userLogin(username, password) {
   $('#js-login-button').on('click', function(event) {
@@ -82,6 +82,7 @@ function goHome() {
 function renderAddClient() {
   $('.js-go-add-client-button').on('click', function(event) {
     event.preventDefault();
+    //need to figure out better way to unhide current container
     $('.dashboard-container').addClass('hidden');
     $('.add-client-container').removeClass('hidden');
     addClient();
@@ -92,6 +93,10 @@ function renderAddClient() {
 function addClient() {
   const newName = $('#js-add-client-text').val();
   const url = 'http://localhost:8080/api/users/client';
+  const data = {
+    user_id: localStorage.getItem('user_id'),
+    name: newName
+  }
 
   fetch(url, {
     method: 'POST',
@@ -108,6 +113,7 @@ function addClient() {
 
 function renderNewClient(response) {
   $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client" value="Add another?">`)
+  addAnotherClient();
 }
 
 function addAnotherClient() {
@@ -119,10 +125,68 @@ function addAnotherClient() {
 }
 
 function renderAddChore() {
-  //add chores, post chore
+  $('.js-go-add-chore-button').on('click', function(event) {
+    event.preventDefault();
+    $('.dashboard-container').addClass('hidden');
+    $('.js-add-chore-container').removeClass('hidden');
+    addChore();
+  })
+}
+
+function addChore() {
+  $('#js-add-chore-button').on('click', function(event) {
+    event.preventDefault();
+    const newChore = $('#js-add-chore-text').val();
+    const newValue = $('#js-add-chore-value-number').val();
+    const url = 'http://localhost:8080/api/users/chore';
+    const data = {
+        user_id: localStorage.getItem('user_id'),
+        choreName: newChore,
+        value: newValue
+    }
+
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(response => renderNewChore(response))
+    .catch(err => console.error('Error', err));
+  });
+}
+
+function renderNewChore(response) {
+  $('#js-render-chore-success').html(`<p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore" value="Add another?">`);
+  addAnotherChore();
+
+}
+
+function addAnotherChore() {
+  $('#js-add-another-chore').on('click', function(event) {
+    event.preventDefault();
+    renderAddChore();
+    $('#js-render-chore-success').empty();
+  });
 }
 
 function renderEditChore() {
+  $('.js-go-edit-chore-button').on('click', function(event) {
+    event.preventDefault();
+    $('#js-dashboard-container').addClass('hidden');
+    $('#js-edit-chore-list-container').removeClass('hidden');
+    getChores();
+  });
+}
+
+function getChores() {
+
+}
+
+function renderChores() {
 
 }
 
