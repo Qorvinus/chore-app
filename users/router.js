@@ -318,6 +318,23 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error ' }));
 })
 
+router.get('/chore', jwtAuth, (req, res) => {
+  User
+    .findById(req.body.user_id)
+    .then(user => {
+      if (user) {
+        Chore
+          .find()
+          .then(chores => {
+            res.json(chores.map(client => chore.serialize()));
+          })
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+      };
+    });
+})
 //remove me later after testing complete
 router.get('/users', (req, res) => {
   return User.find()

@@ -37,8 +37,17 @@ localStorage.setItem('authToken', 'user_id');
 //   getChores(renderChores);
 // }
 
+function renderLogin() {
+  $('#js-go-login-button').on('click', function(event) {
+    event.preventDefault();
+    $('.homepage-container').addClass('hidden');
+    $('.login-container').removeClass('hidden');
+    userLogin();
+  });
+}
+
 function userLogin(username, password) {
-  $('#js-login-button').on('click', function(event) {
+  $('#js-go-login-button').on('click', function(event) {
     event.preventDefault();
     const username = $('#js-username').val();
     const password = $('#js-password').val();
@@ -128,7 +137,7 @@ function renderAddChore() {
   $('.js-go-add-chore-button').on('click', function(event) {
     event.preventDefault();
     $('.dashboard-container').addClass('hidden');
-    $('.js-add-chore-container').removeClass('hidden');
+    $('.add-chore-container').removeClass('hidden');
     addChore();
   })
 }
@@ -176,25 +185,49 @@ function addAnotherChore() {
 function renderEditChore() {
   $('.js-go-edit-chore-button').on('click', function(event) {
     event.preventDefault();
-    $('#js-dashboard-container').addClass('hidden');
-    $('#js-edit-chore-list-container').removeClass('hidden');
+    $('.dashboard-container').addClass('hidden');
+    $('.edit-chore-list-container').removeClass('hidden');
     getChores();
   });
 }
 
 function getChores() {
+  const url = 'http://localhost:8080/api/users/chore';
+
+  fetch(url, {
+    method: 'GET',
+    body: {
+      user_id: localStorage.getItem('user_id')
+      },
+    headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+        'Content-Type': 'application/json'
+      }
+  })
+  .then(res => res.json())
+  .then(response => renderChores(response))
+  .catch(err => console.error('Error', err));
+}
+
+function renderChores(response) {
+  $('#js-chore-list').append(`<li>${response.choreName}, $${response.value}<span class="hidden">${response.id}</span><input type="button" value="Edit" id="js-chore-edit-button"><input type="button" value="Delete" id="js-chore-delete-button"></li>`);
+  editChore();
+  deleteChore();
+}
+
+function editChore() {
 
 }
 
-function renderChores() {
+function deleteChore() {
 
 }
 
 function renderSignUp() {
   $('#js-go-signup-button').on('click', function(event) {
     event.preventDefault();
-    $('#js-homepage-container').addClass('hidden');
-    $('#js-signup-container').removeClass('hidden');
+    $('.homepage-container').addClass('hidden');
+    $('.signup-container').removeClass('hidden');
     signUp();
   });
 }
@@ -243,7 +276,7 @@ function editClient() {
 $(function() {
   // getAndRenderClients();
   // getAndRenderChores();
-  userLogin();
+  renderLogin();
   renderSignUp();
   logoClick();
 })
