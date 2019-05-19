@@ -148,7 +148,7 @@ router.post('/client', jwtAuth, (req, res) => {
           .then(client => {
             return User.findByIdAndUpdate(user.id, {$push:{'client': client.id}})
           })
-          .then(user => res.status(201).json(user.serialize()))
+          .then(client => res.status(201).json(client.serialize()))
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });

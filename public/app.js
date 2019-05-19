@@ -2,17 +2,20 @@
 
 localStorage.setItem('authToken');
 
-function getClients(callback) {
-  setTimeout(function() {
-    callback(CLIENTS)
-  }, 1);
-}
-
-function getChores(callback) {
-  setTimeout(function() {
-    callback(CHORES)
-  }, 1);
-}
+// const CHORES = {};
+// const CLIENTS = {};
+//
+// function getClients(callback) {
+//   setTimeout(function() {
+//     callback(CLIENTS)
+//   }, 1);
+// }
+//
+// function getChores(callback) {
+//   setTimeout(function() {
+//     callback(CHORES)
+//   }, 1);
+// }
 
 function renderClients(data) {
   for (let i = 0; i < data.clients.length; i++) {
@@ -57,16 +60,16 @@ function userLogin(username, password) {
     //reroute successful login w/ jwtAuth to new dashboard function
     .then(response => renderDashboard(response))
     .catch(err => console.error('Error', err));
-  })
+  });
 }
 
 function renderDashboard(response) {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
   goHome();
-  addClient();
-  addChore();
-  logout();
+  renderAddClient();
+  renderAddChore();
+  renderEditChore();
 }
 
 function goHome() {
@@ -76,29 +79,51 @@ function goHome() {
   //edit/put client totalValue
 }
 
-function addClient() {
-  $('#js-add-client').on('click', function(event) {
+function renderAddClient() {
+  $('.js-go-add-client-button').on('click', function(event) {
     event.preventDefault();
-    //change DOM to show add client page
+    $('.dashboard-container').addClass('hidden');
+    $('.add-client-container').removeClass('hidden');
+    addClient();
     //call functions for add client page
-  })
+  });
 }
 
-function addChore() {
-  //add chores, post chore
-}
+function addClient() {
+  const newName = $('#js-add-client-text').val();
+  const url = 'http://localhost:8080/api/users/client';
 
-//maybe don't need, could possibly use <a href="http://localhost:8080/logout">Logout</a> use anchor**
-function logout() {
-  const url = 'http://localhost:8080/logout';
-  const data = 'logout()';
   fetch(url, {
-    method: 'GET',
+    method: 'POST',
     body: JSON.stringify(data),
     headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
       'Content-Type': 'application/json'
     }
   })
+  .then(res => res.json())
+  .then(response => renderNewClient(response))
+  .catch(err => console.error('Error', err));
+}
+
+function renderNewClient(response) {
+  $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client" value="Add another?">`)
+}
+
+function addAnotherClient() {
+  $('#js-add-another-client').on('click', function(event) {
+    event.preventDefault();
+    renderAddClient();
+    $('#js-render-client-success').empty();
+  });
+}
+
+function renderAddChore() {
+  //add chores, post chore
+}
+
+function renderEditChore() {
+
 }
 
 function renderSignUp() {
@@ -107,14 +132,14 @@ function renderSignUp() {
     $('#js-homepage-container').addClass('hidden');
     $('#js-signup-container').removeClass('hidden');
     signUp();
-  })
+  });
 }
 
 function logoClick() {
   $('#logo').on('click', function(event) {
     event.preventDefault();
     location.reload()
-  })
+  });
 }
 
 function signUp() {
@@ -144,7 +169,7 @@ function signUp() {
     //reroute successful signup to new page successful sign up, => login
     .then(response => console.log('Success:', JSON.stringify(response)))
     .catch(err => console.error('Error', err));
-  })
+  });
 }
 
 function editClient() {
@@ -152,8 +177,8 @@ function editClient() {
 }
 
 $(function() {
-  getAndRenderClients();
-  getAndRenderChores();
+  // getAndRenderClients();
+  // getAndRenderChores();
   userLogin();
   renderSignUp();
   logoClick();

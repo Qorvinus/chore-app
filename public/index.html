@@ -71,7 +71,7 @@
     <ul id="js-render-chores"></ul>
   </section>
 
-<section role="section" id="js-add-chore" class="add-chore hidden">
+<section role="section" id="js-add-chore-container" class="add-chore-container hidden">
   <!-- Add instructions -->
   <form id="js-add-chore-form">
     <span>Name of chore:</span>
@@ -82,22 +82,23 @@
   </form>
 </section>
 
-<section role="section" id="js-add-client" class="add-client hidden">
+<section role="section" id="js-add-client" class="add-client-container hidden">
   <!-- Add instructions -->
   <form id="js-add-client-form">
     <span>Name of client:</span>
-    <input type="text">
+    <input type="text" id="js-add-client-text">
     <input type="submit" value="add" id="js-add-client-button">
   </form>
+  <div id="js-render-client-success"></div>
 </section>
 
-<section role="section" id="js-edit-chore-list" class="edit-chore-list hidden">
+<section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container hidden">
   <!-- Add instructions -->
   <ul id="js-chore-list" class="">List of chores:</ul>
   <!-- in app.js populate chores, w/ edit button for each -->
 </section>
 
-<section role="section" id="js-edit-chore" class="edit-chore hidden">
+<section role="section" id="js-edit-chore-container" class="edit-chore-container hidden">
   <!-- Add instructions -->
   <form id="js-edit-chore-prop">
     <span>Edit name of chore</span>
@@ -108,7 +109,7 @@
   </form>
 </section>
 
-<section role="section" id="js-edit-client" class="edit-client hidden">
+<section role="section" id="js-edit-client-container" class="edit-client-container hidden">
   <!-- Add instructions -->
   <form id="js-edit-client-name">
     <span>Edit name of client</span>
