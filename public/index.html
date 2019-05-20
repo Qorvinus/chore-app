@@ -66,9 +66,7 @@
   <section role="section" class="dashboard-container hidden" id="js-dashboard-container">
     <!-- Needs to be updated -->
     <div>Clients:</div>
-    <div id="js-render-clients"></div>
-    <div>Chores:</div>
-    <ul id="js-render-chores"></ul>
+    <ul id="js-render-clients-list"></ul>
   </section>
 
 <section role="section" id="js-add-chore-container" class="add-chore-container hidden">
@@ -103,10 +101,10 @@
   <!-- Add instructions -->
   <form id="js-edit-chore-prop">
     <span>Edit name of chore</span>
-    <input type="text" value="">
+    <input type="text" value="" id="js-edit-chore-text">
     <span>Edit value of chore</span>
-    <input type="number" value="">
-    <input type="submit" value="Submit">
+    <input type="number" value="" id="js-edit-chore-value-number">
+    <input type="submit" value="Submit" id="js-edit-chore-submit">
   </form>
 </section>
 
@@ -114,8 +112,8 @@
   <!-- Add instructions -->
   <form id="js-edit-client-name">
     <span>Edit name of client</span>
-    <input type="text" value="">
-    <input type="submit" value="Submit">
+    <input type="text" value="" id="js-edit-client-text">
+    <input type="submit" value="Submit" id="js-edit-client-submit">
   </form>
 </section>
 
