@@ -124,7 +124,7 @@ router.post('/signup', (req, res, next) => {
 });
 
 router.post('/client', jwtAuth, (req, res) => {
-  const requireFields = ['user_id', 'name'];
+  const requireFields = ['name'];
   const missingField = requireFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -137,7 +137,7 @@ router.post('/client', jwtAuth, (req, res) => {
   }
 
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Client
@@ -146,9 +146,13 @@ router.post('/client', jwtAuth, (req, res) => {
             totalValue: 0
           })
           .then(client => {
-            return User.findByIdAndUpdate(user.id, {$push:{'client': client.id}})
+            User.findByIdAndUpdate(user.id, {$push:{'client': client.id}})
+            .catch(err => {
+              console.error(err);
+              res.status(500).json({ error: 'Internal server error' });
+            })
+            return res.status(201).json(client.serialize())
           })
-          .then(client => res.status(201).json(client.serialize()))
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });
@@ -188,7 +192,7 @@ router.put('/client/:id', jwtAuth, (req, res) => {
 
 router.delete('client/:id', jwtAuth, (req, res) => {
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Client
@@ -203,13 +207,13 @@ router.delete('client/:id', jwtAuth, (req, res) => {
 
 router.get('/client', jwtAuth, (req, res) => {
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Client
           .find()
           .then(clients => {
-            res.json(clients.map(client => client.serialize()));
+            return res.json(clients.map(client => client.serialize()));
           })
           .catch(err => {
             console.error(err);
@@ -233,7 +237,7 @@ router.post('/chore', jwtAuth, (req, res) => {
   }
 
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Chore
@@ -261,6 +265,7 @@ router.post('/chore', jwtAuth, (req, res) => {
       });
 })
 
+//may not need this one
 router.put('/chore/:id', jwtAuth, (req, res) => {
   if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
     res.status(400).json({
@@ -284,7 +289,7 @@ router.put('/chore/:id', jwtAuth, (req, res) => {
 
 router.delete('/chore/:id', jwtAuth, (req, res) => {
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Chore
@@ -320,13 +325,13 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
 
 router.get('/chore', jwtAuth, (req, res) => {
   User
-    .findById(req.body.user_id)
+    .findById(req.user)
     .then(user => {
       if (user) {
         Chore
           .find()
           .then(chores => {
-            res.json(chores.map(client => chore.serialize()));
+            return res.json(chores.map(client => chore.serialize()));
           })
           .catch(err => {
             console.error(err);

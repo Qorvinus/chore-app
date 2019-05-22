@@ -1,7 +1,5 @@
 'use strict';
 
-localStorage.setItem('authToken', 'user_id');
-
 // const CHORES = {};
 // const CLIENTS = {};
 //
@@ -67,12 +65,15 @@ function userLogin(username, password) {
     })
     .then(res => res.json())
     //reroute successful login w/ jwtAuth to new dashboard function
-    .then(response => renderDashboard(response))
+    .then(response => {
+      localStorage.setItem('authToken', response.authToken)
+      renderDashboard()
+    })
     .catch(err => console.error('Error', err));
   });
 }
 
-function renderDashboard(response) {
+function renderDashboard() {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
   $('.login-container').addClass('hidden');
@@ -89,9 +90,6 @@ function getClient() {
 
   fetch(url, {
     method: 'GET',
-    body: {
-      user_id: localStorage.getItem('user_id')
-    },
     headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
@@ -186,27 +184,30 @@ function renderAddClient() {
 }
 
 function addClient() {
-  const newName = $('#js-add-client-text').val();
-  const url = 'http://localhost:8080/api/users/client';
-  const data = {
-    user_id: localStorage.getItem('user_id'),
-    name: newName
-  }
-
-  fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-      'Content-Type': 'application/json'
+  $('#js-add-client-button').on('click', function(event) {
+    event.preventDefault();
+    const newName = $('#js-add-client-text').val();
+    const url = 'http://localhost:8080/api/users/client';
+    const data = {
+      name: newName
     }
-  })
-  .then(res => res.json())
-  .then(response => renderNewClient(response))
-  .catch(err => console.error('Error', err));
+
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(response => renderNewClient(response))
+    .catch(err => console.error('Error', err));
+  });
 }
 
 function renderNewClient(response) {
+  console.log(response);
   $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client" value="Add another?">`)
   addAnotherClient();
 }
@@ -282,9 +283,6 @@ function getChore() {
 
   fetch(url, {
     method: 'GET',
-    body: {
-      user_id: localStorage.getItem('user_id')
-      },
     headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
