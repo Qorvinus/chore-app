@@ -186,7 +186,7 @@ router.put('/client/:id', jwtAuth, (req, res) => {
 
   Client
     .findByIdAndUpdate(req.params.id, { $set: updated }, { new: true })
-    .then(updatedClient => res.status(204).end())
+    .then(updatedClient => res.status(204).send({ message: 'Client update successful' }))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
 
@@ -246,9 +246,13 @@ router.post('/chore', jwtAuth, (req, res) => {
             value: req.body.value
           })
           .then(chore => {
-            return User.findByIdAndUpdate(user.id, {$push:{'chore': chore.id}})
+            User.findByIdAndUpdate(user.id, {$push:{'chore': chore.id}})
           })
-          .then(chore => res.status(201).json(chore.serialize()))
+          .catch(err => {
+            console.error(err);
+            res.status(500).json({ error: 'Internal server error' });
+          })
+          return res.status(201).json(chore.serialize())
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });
@@ -331,7 +335,7 @@ router.get('/chore', jwtAuth, (req, res) => {
         Chore
           .find()
           .then(chores => {
-            return res.json(chores.map(client => chore.serialize()));
+            return res.json(chores.map(chore => chore.serialize()));
           })
           .catch(err => {
             console.error(err);

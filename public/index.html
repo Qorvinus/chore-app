@@ -30,92 +30,21 @@
             <a href="http://localhost:8080/logout">Logout</a>
           </span>
         </div>
-
       </div>
     </header>
 
-  <section role="section" class="homepage-container" id="js-homepage-container">
-    <h1>About</h1>
-    <p>Have you ever wanted to track what chores your kids are completing and how much allowance they've made?</p>
-    <p>You're in luck!  This web app helps you track their chores as well as their allowance!</p>
-    <input id="js-go-signup-button" type="button" value="Sign Up Here!">
-  </section>
+  <main role="main" id="js-main-container" class="main-container">
+    <section role="section" class="homepage-container" id="js-homepage-container">
+      <h1>About</h1>
+      <p>Have you ever wanted to track what chores your kids are completing and how much allowance they've made?</p>
+      <p>You're in luck!  This web app helps you track their chores as well as their allowance!</p>
+      <input id="js-go-signup-button" type="button" value="Sign Up Here!">
+    </section>
+  </main>
 
-  <section role="section" class="login-container hidden" id="js-login-conatiner">
-    <form id="js-login" class="login">
-      <span class="username">User Name:<input id="js-username" type="text" name="username"></span>
-      <span class="password">Password:<input id="js-password" type="password" name="password"></span>
-      <input id="js-login-button" class="login-button" type="submit" value="Log in">
-    </form>
-  </section>
 
-  <section role="section" class="signup-container hidden" id="js-signup-container">
-    <form id="js-signup-form">
-      <span class="block">First Name:</span>
-      <input type="text" id="js-firstname-signup">
-      <span class="block">Last Name:</span>
-      <input type="text" id="js-lastname-signup">
-      <span class="block">User Name:</span>
-      <input type="text" id="js-username-signup">
-      <span class="block">Password:</span>
-      <input type="password" id="js-password-signup">
-      <input id="js-signup-button" type="submit" value="Sign-Up!">
-    </form>
-  </section>
 
-  <section role="section" class="dashboard-container hidden" id="js-dashboard-container">
-    <!-- Needs to be updated -->
-    <div>Clients:</div>
-    <ul id="js-render-clients-list"></ul>
-  </section>
 
-<section role="section" id="js-add-chore-container" class="add-chore-container hidden">
-  <!-- Add instructions -->
-  <form id="js-add-chore-form">
-    <span>Name of chore:</span>
-    <input type="text" id="js-add-chore-text">
-    <span>Value of chore:</span>
-    <input type="number" id="js-add-chore-value-number">
-    <input type="submit" value="add" id="js-add-chore-button">
-  </form>
-  <div id="js-render-chore-success"></div>
-</section>
-
-<section role="section" id="js-add-client" class="add-client-container hidden">
-  <!-- Add instructions -->
-  <form id="js-add-client-form">
-    <span>Name of client:</span>
-    <input type="text" id="js-add-client-text">
-    <input type="submit" value="add" id="js-add-client-button">
-  </form>
-  <div id="js-render-client-success"></div>
-</section>
-
-<section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container hidden">
-  <!-- Add instructions -->
-  <ul id="js-chore-list" class="">List of chores:</ul>
-  <!-- in app.js populate chores, w/ edit button for each -->
-</section>
-
-<section role="section" id="js-edit-chore-container" class="edit-chore-container hidden">
-  <!-- Add instructions -->
-  <form id="js-edit-chore-prop">
-    <span>Edit name of chore</span>
-    <input type="text" value="" id="js-edit-chore-text">
-    <span>Edit value of chore</span>
-    <input type="number" value="" id="js-edit-chore-value-number">
-    <input type="submit" value="Submit" id="js-edit-chore-submit">
-  </form>
-</section>
-
-<section role="section" id="js-edit-client-container" class="edit-client-container hidden">
-  <!-- Add instructions -->
-  <form id="js-edit-client-name">
-    <span>Edit name of client</span>
-    <input type="text" value="" id="js-edit-client-text">
-    <input type="submit" value="Submit" id="js-edit-client-submit">
-  </form>
-</section>
 
   <script type="text/javascript" src="app.js"></script>
 </body>

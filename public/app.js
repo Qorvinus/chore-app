@@ -35,11 +35,23 @@
 //   getChores(renderChores);
 // }
 
-function renderLogin() {
+function renderLoginClick() {
   $('#js-go-login-button').on('click', function(event) {
     event.preventDefault();
-    $('.homepage-container').addClass('hidden');
-    $('.login-container').removeClass('hidden');
+    renderLogin();
+  });
+}
+
+function renderLogin() {
+    $('#js-main-container').html(`
+      <section role="section" class="login-container" id="js-login-conatiner">
+        <form id="js-login" class="login">
+          <span class="username">User Name:<input id="js-username" type="text" name="username"></span>
+          <span class="password">Password:<input id="js-password" type="password" name="password"></span>
+          <input id="js-login-button" class="login-button" type="submit" value="Log in">
+        </form>
+      </section>
+      `);
     userLogin();
   });
 }
@@ -76,13 +88,18 @@ function userLogin(username, password) {
 function renderDashboard() {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
-  $('.login-container').addClass('hidden');
-  $('.dashboard-container').removeClass('hidden');
+  $('#js-main-container').html(`
+    <section role="section" class="dashboard-container" id="js-dashboard-container">
+      Needs to be updated
+      <div>Clients:</div>
+      <ul id="js-render-clients-list"></ul>
+    </section>
+    `)
   getClient();
   goHome();
-  renderAddClient();
-  renderAddChore();
-  renderEditChore();
+  renderAddClientClick();
+  renderAddChoreClick();
+  renderEditChoreClick();
 }
 
 function getClient() {
@@ -100,18 +117,30 @@ function getClient() {
   .catch(err => console.error('Error', err));
 }
 
-function renderClient(response) {
-  $('#js-render-clients-list').append(`<li>${response.name}, Total Amount: ${response.totalValue}<span class="hidden">${response.id}</span><input type="button" value="Edit" id="js-client-edit-button"><input type="button" value="Delete" id="js-client-delete-button"></li>`);
-  let id = response.id;
+function renderClient(data) {
+  for (let i = 0; i < data.length; i++) {
+    $('#js-render-clients-list').append(`
+      <li>${data[i].name}, Total Amount: ${data[i].totalVlue}</span class="-hidden">${data[i].id}</span><input type="button" value="Edit" class="js-client-edit-button"><input type="button" value="Delete" class="js-client-delete-button"></li>
+      `);
+      let id = data[i].id;
+  };
   renderEditClient(id);
   deleteClient(id);
 }
 
 function renderEditClient(client_id) {
-  $('#js-client-edit-button').on('click', function(event) {
+  $('.js-client-edit-button').on('click', function(event) {
     event.preventDefault();
-    $('.js-dashboard-container').addClass('hidden');
-    $('.js-edit-client-container').removeClass('hidden');
+    $('#js-main-container').html(`
+      <section role="section" id="js-edit-client-container" class="edit-client-container hidden">
+        <p>Add instructions</p>
+        <form id="js-edit-client-name">
+          <span>Edit name of client</span>
+          <input type="text" value="" id="js-edit-client-text">
+          <input type="submit" value="Submit" id="js-edit-client-submit">
+        </form>
+      </section>
+      `);
     editClient(client_id);
   });
 }
@@ -122,8 +151,7 @@ function editClient(client_id) {
     const editName = $('#js-edit-client-text').val();
     const url = `http://localhost:8080/api/users/client/${client_id}`;
     const data = {
-      user_id: localStorage.getItem('user_id'),
-      client_id: client_id,
+      id: client_id,
       name: editName
     }
 
@@ -136,21 +164,20 @@ function editClient(client_id) {
       }
     })
     .then(res => res.json())
-    .then(response => reloadClient(response))
+    .then(reloadClient())
     .catch(err => console.error('Error', err));
   });
 }
 
 function deleteClient(client_id) {
-  $('#js-client-delete-button').on('click', function(event) {
+  $('.js-client-delete-button').on('click', function(event) {
     event.preventDefault();
     const url = `http://localhost:8080/api/users/client/${client_id}`;
 
     fetch(url, {
       method: 'DELETE',
       body: {
-        user_id: localStorage.getItem('user_id'),
-        client_id: client_id
+        id: client_id
       },
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
@@ -158,12 +185,12 @@ function deleteClient(client_id) {
       }
     })
     .then(res => res.json())
-    .then(response => reloadClient(response))
+    .then(reloadClient())
     .catch(err => console.error('Error', err));
   });
 }
 
-function reloadClient(response) {
+function reloadClient() {
   $('#js-render-clients-list').empty();
   getClient();
 }
@@ -172,29 +199,40 @@ function goHome() {
   reloadClient();
 }
 
-function renderAddClient() {
+function renderAddClientClick() {
   $('.js-go-add-client-button').on('click', function(event) {
     event.preventDefault();
-    //need to figure out better way to unhide current container
-    $('.dashboard-container').addClass('hidden');
-    $('.add-client-container').removeClass('hidden');
-    addClient();
-    //call functions for add client page
+    renderAddClient();
   });
 }
+
+
+function renderAddClient() {
+    ('#js-main-container').html(`
+      <section role="section" id="js-add-client" class="add-client-container">
+        <p>Add instructions</p>
+        <form id="js-add-client-form">
+          <span>Name of client:</span>
+          <input type="text" id="js-add-client-text">
+          <input type="submit" value="add" id="js-add-client-button">
+        </form>
+        <div id="js-render-client-success"></div>
+      </section>
+      `)
+    addClient();
+  }
 
 function addClient() {
   $('#js-add-client-button').on('click', function(event) {
     event.preventDefault();
     const newName = $('#js-add-client-text').val();
     const url = 'http://localhost:8080/api/users/client';
-    const data = {
-      name: newName
-    }
 
     fetch(url, {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: {
+        name: newName
+      },
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
@@ -208,25 +246,40 @@ function addClient() {
 
 function renderNewClient(response) {
   console.log(response);
-  $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client" value="Add another?">`)
+  $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client-button" value="Add another?">`)
+  document.getElementById('js-add-client-text').value = "";
   addAnotherClient();
 }
 
 function addAnotherClient() {
-  $('#js-add-another-client').on('click', function(event) {
+  $('#js-add-another-client-button').on('click', function(event) {
     event.preventDefault();
     renderAddClient();
-    $('#js-render-client-success').empty();
+  });
+}
+
+function renderAddChoreClick() {
+  $('.js-go-add-chore-button').on('click', function(event) {
+    event.preventDefault();
+    renderAddChore();
   });
 }
 
 function renderAddChore() {
-  $('.js-go-add-chore-button').on('click', function(event) {
-    event.preventDefault();
-    $('.dashboard-container').addClass('hidden');
-    $('.add-chore-container').removeClass('hidden');
+    $('#js-main-container').html(`
+      <section role="section" id="js-add-chore-container" class="add-chore-container">
+        <p>Add instructions</p>
+        <form id="js-add-chore-form">
+          <span>Name of chore:</span>
+          <input type="text" id="js-add-chore-text">
+          <span>Value of chore:</span>
+          <input type="number" id="js-add-chore-value-number">
+          <input type="submit" value="add" id="js-add-chore-button">
+        </form>
+        <div id="js-render-chore-success"></div>
+      </section>
+      `);
     addChore();
-  })
 }
 
 function addChore() {
@@ -236,7 +289,6 @@ function addChore() {
     const newValue = $('#js-add-chore-value-number').val();
     const url = 'http://localhost:8080/api/users/chore';
     const data = {
-        user_id: localStorage.getItem('user_id'),
         choreName: newChore,
         value: newValue
     }
@@ -256,26 +308,33 @@ function addChore() {
 }
 
 function renderNewChore(response) {
-  $('#js-render-chore-success').html(`<p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore" value="Add another?">`);
+  $('#js-render-chore-success').html(`<p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore-button" value="Add another?">`);
+  document.getElementById('js-add-chore-text').value = "";
   addAnotherChore();
-
 }
 
 function addAnotherChore() {
-  $('#js-add-another-chore').on('click', function(event) {
+  $('#js-add-another-chore-button').on('click', function(event) {
     event.preventDefault();
     renderAddChore();
-    $('#js-render-chore-success').empty();
+  });
+}
+
+function renderEditChoreClick() {
+  $('.js-go-edit-chore-button').on('click', function(event) {
+    event.preventDefault();
+    renderEditChore();
   });
 }
 
 function renderEditChore() {
-  $('.js-go-edit-chore-button').on('click', function(event) {
-    event.preventDefault();
-    $('.dashboard-container').addClass('hidden');
-    $('.edit-chore-list-container').removeClass('hidden');
+  $('#js-main-container').html(`
+    <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container hidden">
+      <p>Add instructions</p>
+      <ul id="js-chore-list" class="">List of chores:</ul>
+    </section>
+    `)
     getChore();
-  });
 }
 
 function getChore() {
@@ -293,18 +352,32 @@ function getChore() {
   .catch(err => console.error('Error', err));
 }
 
-function renderChore(response) {
-  $('#js-chore-list').append(`<li>${response.choreName}, $${response.value}<span class="hidden">${response.id}</span><input type="button" value="Edit" id="js-chore-edit-button"><input type="button" value="Delete" id="js-chore-delete-button"></li>`);
-  let id = response.id;
-  renderEditChore(id);
+function renderChore(data) {
+  for (let i = 0; i < data.length; i++) {
+    $('#js-chore-list').append(`<li>${data[i].choreName}, $${data[i].value}<span class="-hidden">${data[i].id}</span><input type="button" value="Edit" class="js-chore-edit-button"><input type="button" value="Delete" class="js-chore-delete-button"></li>`);
+    let id = data[i].id;
+    let name = data[i].choreName;
+  };
+  renderEditChore(id, name);
   deleteChore(id);
 }
 
-function renderEditChore(chore_id) {
-  $('#js-chore-edit-button').on('click', function(event) {
+function renderEditChore(chore_id, choreName) {
+  $('.js-chore-edit-button').on('click', function(event) {
     event.preventDefault();
-    $('.edit-chore-list-container').addClass('hidden');
-    $('.edit-chore-container').removeClass('hidden');
+    $('#js-main-container').html(`
+      <section role="section" id="js-edit-chore-container" class="edit-chore-container hidden">
+        <p>Add instructions</p>
+        <p>Currently editing ${choreName}.</p>
+        <form id="js-edit-chore-prop">
+          <span>Edit name of chore</span>
+          <input type="text" value="" id="js-edit-chore-text">
+          <span>Edit value of chore</span>
+          <input type="number" value="" id="js-edit-chore-value-number">
+          <input type="submit" value="Submit" id="js-edit-chore-submit">
+        </form>
+      </section>
+      `);
     editChore(chore_id);
   });
 }
@@ -314,10 +387,9 @@ function editChore(chore_id) {
     event.preventDefault();
     const editChore = $('#js-edit-chore-text').val();
     const editValue = $('#js-edit-chore-value-number').val();
-    const url = `http://localhost:8080/api/users/client/${client_id}`;
+    const url = `http://localhost:8080/api/users/client/${chore_id}`;
     const data = {
-      user_id: localStorage.getItem('user_id'),
-      chore_id: chore_id,
+      id: chore_id,
       choreName: editChore,
       value: editValue
     }
@@ -331,7 +403,7 @@ function editChore(chore_id) {
       }
     })
     .then(res => res.json())
-    .then(response => reloadChore(response))
+    .then(reloadChore())
     .catch(err => console.error('Error', err));
   });
 }
@@ -344,8 +416,7 @@ function deleteChore(chore_id) {
     fetch(url, {
       method: 'DELETE',
       body: {
-        user_id: localStorage.getItem('user_id'),
-        chore_id: chore_id
+        id: chore_id
       },
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
@@ -353,7 +424,7 @@ function deleteChore(chore_id) {
       }
     })
     .then(res => res.json())
-    .then(response => reloadChore(response))
+    .then(reloadChore())
     .catch(err => console.error('Error', err));
   });
 }
@@ -366,9 +437,7 @@ function reloadChore(response) {
 function renderSignUp() {
   $('#js-go-signup-button').on('click', function(event) {
     event.preventDefault();
-    $('.homepage-container').addClass('hidden');
-    $('.signup-container').removeClass('hidden');
-    signUp();
+    renderSignUp();
   });
 }
 
@@ -377,6 +446,25 @@ function logoClick() {
     event.preventDefault();
     location.reload()
   });
+}
+
+function renderSignUp() {
+  $('#js-main-container').html(`
+    <section role="section" class="signup-container" id="js-signup-container">
+      <form id="js-signup-form">
+        <span class="block">First Name:</span>
+        <input type="text" id="js-firstname-signup">
+        <span class="block">Last Name:</span>
+        <input type="text" id="js-lastname-signup">
+        <span class="block">User Name:</span>
+        <input type="text" id="js-username-signup">
+        <span class="block">Password:</span>
+        <input type="password" id="js-password-signup">
+        <input id="js-signup-button" type="submit" value="Sign-Up!">
+      </form>
+    </section>
+    `);
+    signUp();
 }
 
 function signUp() {
@@ -404,7 +492,7 @@ function signUp() {
     })
     .then(res => res.json())
     //reroute successful signup to new page successful sign up, => login
-    .then(response => console.log('Success:', JSON.stringify(response)))
+    .then(renderLogin())
     .catch(err => console.error('Error', err));
   });
 }
@@ -414,9 +502,7 @@ function editClient() {
 }
 
 $(function() {
-  // getAndRenderClients();
-  // getAndRenderChores();
-  renderLogin();
+  renderLoginClick();
   renderSignUp();
   logoClick();
 })

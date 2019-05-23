@@ -74,9 +74,9 @@ UserSchema.statics.hashPassword = function(password) {
   return bcrypt.hash(password, 10);
 };
 
-const Client = mongoose.model("Clients", ClientSchema);
+const Client = mongoose.model("Client", ClientSchema);
 
-const Chore = mongoose.model("Chores", ChoreSchema);
+const Chore = mongoose.model("Chore", ChoreSchema);
 
 const User = mongoose.model("User", UserSchema)
 
