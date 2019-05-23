@@ -53,8 +53,7 @@ function renderLogin() {
       </section>
       `);
     userLogin();
-  });
-}
+  }
 
 function userLogin(username, password) {
   $('#js-login-button').on('click', function(event) {
@@ -75,8 +74,12 @@ function userLogin(username, password) {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
-    //reroute successful login w/ jwtAuth to new dashboard function
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(response => {
       localStorage.setItem('authToken', response.authToken)
       renderDashboard()
@@ -88,18 +91,23 @@ function userLogin(username, password) {
 function renderDashboard() {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
+  renderHome();
+  goHomeClick();
+  renderAddClientClick();
+  renderAddChoreClick();
+  renderEditChoreClick();
+}
+
+function renderHome() {
   $('#js-main-container').html(`
     <section role="section" class="dashboard-container" id="js-dashboard-container">
       Needs to be updated
       <div>Clients:</div>
       <ul id="js-render-clients-list"></ul>
+      <span class="js-error-message"></span>
     </section>
-    `)
-  getClient();
-  goHome();
-  renderAddClientClick();
-  renderAddChoreClick();
-  renderEditChoreClick();
+    `);
+    getClient();
 }
 
 function getClient() {
@@ -112,33 +120,45 @@ function getClient() {
         'Content-Type': 'application/json'
       }
   })
-  .then(res => res.json)
+  .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
   .then(response => renderClient(response))
-  .catch(err => console.error('Error', err));
+  .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
 }
 
 function renderClient(data) {
+  console.log(data);
+  console.log('Made it to renderClient');
   for (let i = 0; i < data.length; i++) {
     $('#js-render-clients-list').append(`
       <li>${data[i].name}, Total Amount: ${data[i].totalVlue}</span class="-hidden">${data[i].id}</span><input type="button" value="Edit" class="js-client-edit-button"><input type="button" value="Delete" class="js-client-delete-button"></li>
       `);
       let id = data[i].id;
+      let name = data[i].name;
+      renderEditClient(id, name);
+      deleteClient(id);
   };
-  renderEditClient(id);
-  deleteClient(id);
 }
 
-function renderEditClient(client_id) {
+function renderEditClient(client_id, name) {
   $('.js-client-edit-button').on('click', function(event) {
     event.preventDefault();
     $('#js-main-container').html(`
       <section role="section" id="js-edit-client-container" class="edit-client-container hidden">
         <p>Add instructions</p>
+        <p>Currently editing client: ${name}.</p>
         <form id="js-edit-client-name">
           <span>Edit name of client</span>
           <input type="text" value="" id="js-edit-client-text">
           <input type="submit" value="Submit" id="js-edit-client-submit">
         </form>
+        <span class="js-error-message"></span>
       </section>
       `);
     editClient(client_id);
@@ -163,9 +183,16 @@ function editClient(client_id) {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(reloadClient())
-    .catch(err => console.error('Error', err));
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
@@ -184,9 +211,16 @@ function deleteClient(client_id) {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(reloadClient())
-    .catch(err => console.error('Error', err));
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
@@ -195,8 +229,11 @@ function reloadClient() {
   getClient();
 }
 
-function goHome() {
-  reloadClient();
+function goHomeClick() {
+  $('.js-go-home-button').on('click', function(event) {
+    event.preventDefault();
+    renderHome();
+  });
 }
 
 function renderAddClientClick() {
@@ -208,7 +245,7 @@ function renderAddClientClick() {
 
 
 function renderAddClient() {
-    ('#js-main-container').html(`
+    $('#js-main-container').html(`
       <section role="section" id="js-add-client" class="add-client-container">
         <p>Add instructions</p>
         <form id="js-add-client-form">
@@ -217,6 +254,7 @@ function renderAddClient() {
           <input type="submit" value="add" id="js-add-client-button">
         </form>
         <div id="js-render-client-success"></div>
+        <span class="js-error-message"></span>
       </section>
       `)
     addClient();
@@ -227,26 +265,36 @@ function addClient() {
     event.preventDefault();
     const newName = $('#js-add-client-text').val();
     const url = 'http://localhost:8080/api/users/client';
-
+    const data = {
+      name: newName
+    }
     fetch(url, {
       method: 'POST',
-      body: {
-        name: newName
-      },
+      body: JSON.stringify(data),
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(response => renderNewClient(response))
-    .catch(err => console.error('Error', err));
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
 function renderNewClient(response) {
   console.log(response);
-  $('#js-render-client-success').html(`<p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client-button" value="Add another?">`)
+  $('#js-render-client-success').html(`
+    <p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client-button" value="Add another?">
+    <span class="js-error-message"></span>
+    `)
   document.getElementById('js-add-client-text').value = "";
   addAnotherClient();
 }
@@ -276,6 +324,7 @@ function renderAddChore() {
           <input type="number" id="js-add-chore-value-number">
           <input type="submit" value="add" id="js-add-chore-button">
         </form>
+        <span class="js-error-message"></span>
         <div id="js-render-chore-success"></div>
       </section>
       `);
@@ -301,15 +350,26 @@ function addChore() {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(response => renderNewChore(response))
-    .catch(err => console.error('Error', err));
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
 function renderNewChore(response) {
-  $('#js-render-chore-success').html(`<p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore-button" value="Add another?">`);
+  $('#js-render-chore-success').html(`
+    <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore-button" value="Add another?">
+    <span class="js-error-message"></span>
+    `);
   document.getElementById('js-add-chore-text').value = "";
+  document.getElementById('js-add-chore-value-number').value = "";
   addAnotherChore();
 }
 
@@ -329,9 +389,11 @@ function renderEditChoreClick() {
 
 function renderEditChore() {
   $('#js-main-container').html(`
-    <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container hidden">
+    <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container">
       <p>Add instructions</p>
-      <ul id="js-chore-list" class="">List of chores:</ul>
+      <div>List of chores:</div>
+      <ul id="js-chore-list" class=""></ul>
+      <span class="js-error-message"></span>
     </section>
     `)
     getChore();
@@ -347,26 +409,34 @@ function getChore() {
         'Content-Type': 'application/json'
       }
   })
-  .then(res => res.json())
+  .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
   .then(response => renderChore(response))
-  .catch(err => console.error('Error', err));
+  .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
 }
 
 function renderChore(data) {
+  console.log(data);
   for (let i = 0; i < data.length; i++) {
     $('#js-chore-list').append(`<li>${data[i].choreName}, $${data[i].value}<span class="-hidden">${data[i].id}</span><input type="button" value="Edit" class="js-chore-edit-button"><input type="button" value="Delete" class="js-chore-delete-button"></li>`);
-    let id = data[i].id;
-    let name = data[i].choreName;
+    let id = $(this).id;
+    let name = $(this).choreName;
+    renderEditChorePage(id, name);
+    deleteChore(id);
   };
-  renderEditChore(id, name);
-  deleteChore(id);
 }
 
-function renderEditChore(chore_id, choreName) {
+function renderEditChorePage(chore_id, choreName) {
   $('.js-chore-edit-button').on('click', function(event) {
     event.preventDefault();
     $('#js-main-container').html(`
-      <section role="section" id="js-edit-chore-container" class="edit-chore-container hidden">
+      <section role="section" id="js-edit-chore-container" class="edit-chore-container">
         <p>Add instructions</p>
         <p>Currently editing ${choreName}.</p>
         <form id="js-edit-chore-prop">
@@ -376,6 +446,7 @@ function renderEditChore(chore_id, choreName) {
           <input type="number" value="" id="js-edit-chore-value-number">
           <input type="submit" value="Submit" id="js-edit-chore-submit">
         </form>
+        <span class="js-error-message"></span>
       </section>
       `);
     editChore(chore_id);
@@ -402,30 +473,44 @@ function editChore(chore_id) {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(reloadChore())
-    .catch(err => console.error('Error', err));
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
 function deleteChore(chore_id) {
-  $('#js-chore-delete-button').on('click', function(event) {
+  $('.js-chore-delete-button').on('click', function(event) {
     event.preventDefault();
     const url = `http://localhost:8080/api/users/chore/${chore_id}`;
-
+    const data = {
+      id: chore_id
+    }
     fetch(url, {
       method: 'DELETE',
-      body: {
-        id: chore_id
-      },
+      body: JSON.stringify(data),
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
-    .then(reloadChore())
-    .catch(err => console.error('Error', err));
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
+    .then(response => reloadChore())
+    .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
   });
 }
 
@@ -434,7 +519,7 @@ function reloadChore(response) {
   getChore();
 }
 
-function renderSignUp() {
+function renderSignUpClick() {
   $('#js-go-signup-button').on('click', function(event) {
     event.preventDefault();
     renderSignUp();
@@ -462,6 +547,7 @@ function renderSignUp() {
         <input type="password" id="js-password-signup">
         <input id="js-signup-button" type="submit" value="Sign-Up!">
       </form>
+      <span class="js-error-message"></span>
     </section>
     `);
     signUp();
@@ -490,19 +576,19 @@ function signUp() {
         'Content-Type': 'application/json'
       }
     })
-    .then(res => res.json())
-    //reroute successful signup to new page successful sign up, => login
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
     .then(renderLogin())
     .catch(err => console.error('Error', err));
   });
 }
 
-function editClient() {
-
-}
-
 $(function() {
   renderLoginClick();
-  renderSignUp();
+  renderSignUpClick();
   logoClick();
 })

@@ -247,12 +247,12 @@ router.post('/chore', jwtAuth, (req, res) => {
           })
           .then(chore => {
             User.findByIdAndUpdate(user.id, {$push:{'chore': chore.id}})
-          })
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });
           })
           return res.status(201).json(chore.serialize())
+        })
           .catch(err => {
             console.error(err);
             res.status(500).json({ error: 'Internal server error' });
