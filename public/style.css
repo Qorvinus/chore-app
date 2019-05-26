@@ -15,6 +15,27 @@
   cursor: pointer;
 }
 
-.block {
+.block, label {
   display: block;
+}
+
+input[type=radio] {
+  flex: 0 0 auto;
+  margin-right: 20px;
+}
+
+ul {
+  list-style: none;
+}
+
+fieldset {
+  border: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.js-error-message {
+  color: FF0000;
 }

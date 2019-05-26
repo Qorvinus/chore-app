@@ -190,15 +190,14 @@ router.put('/client/:id', jwtAuth, (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
 
-router.delete('client/:id', jwtAuth, (req, res) => {
+router.delete('/client/:id', jwtAuth, (req, res) => {
   User
     .findById(req.user)
     .then(user => {
       if (user) {
         Client
-          .findByIdAndRemove(req.body.client_id)
+          .findByIdAndRemove(req.params.id)
           .then(() => {
-            console.log(`Deleted client with id ${req.body.client_id}`);
             res.status(204).end();
           });
       };
@@ -208,18 +207,26 @@ router.delete('client/:id', jwtAuth, (req, res) => {
 router.get('/client', jwtAuth, (req, res) => {
   User
     .findById(req.user)
-    .then(user => {
-      if (user) {
-        Client
-          .find()
-          .then(clients => {
-            return res.json(clients.map(client => client.serialize()));
-          })
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: 'Internal server error' });
-          });
-      };
+    .populate('client')
+    .populate('chore')
+    .exec((err, user) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      return res.json(user.serialize());
+    });
+})
+
+router.get('/client/:id', jwtAuth, (req, res) => {
+  Client
+    .findById(req.params.id)
+    .then(client => {
+      return res.json(client.serialize());
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
     });
 })
 
@@ -297,12 +304,23 @@ router.delete('/chore/:id', jwtAuth, (req, res) => {
     .then(user => {
       if (user) {
         Chore
-          .findByIdAndRemove(req.body.chore_id)
+          .findByIdAndRemove(req.params.id)
           .then(() => {
-            console.log(`Deleted chore with id ${req.body.chore_id}`);
             res.status(204).end();
           });
       };
+    });
+})
+
+router.get('/chore/:id', jwtAuth, (req, res) => {
+  Chore
+    .findById(req.params.id)
+    .then(chore => {
+      return res.json(chore.serialize());
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error' });
     });
 })
 
@@ -323,27 +341,23 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
 
   Client
     .findByIdAndUpdate(req.params.id, { $set: updated }, { new: true })
-    .then(updatedClient => res.status(204).end())
+    .then(updatedClient => res.status(204).json(updatedClient.serialize()))
     .catch(err => res.status(500).json({ message: 'Internal server error ' }));
 })
 
 router.get('/chore', jwtAuth, (req, res) => {
   User
     .findById(req.user)
-    .then(user => {
-      if (user) {
-        Chore
-          .find()
-          .then(chores => {
-            return res.json(chores.map(chore => chore.serialize()));
-          })
-          .catch(err => {
-            console.error(err);
-            res.status(500).json({ error: 'Internal server error' });
-          });
-      };
+    .populate('chore')
+    .exec((err, user) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+      return res.json(user.serialize());
     });
 })
+
 //remove me later after testing complete
 router.get('/users', (req, res) => {
   return User.find()
