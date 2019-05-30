@@ -80,7 +80,8 @@ function renderHome() {
     </section>
     `);
     getUserInfo(renderHomeClients);
-    onClientHomeCheck();
+    renderLogChorePageClick();
+    renderPayPageClick();
 }
 
 function getUserInfo(callback) {
@@ -121,29 +122,17 @@ function renderHomeClients(data) {
     };
 }
 
-function onClientHomeCheck() {
-  $('#js-render-clients-home').change('.js-clients-home-radio', function() {
-    checkClientHomeSelection();
-  });
-}
-
-function checkClientHomeSelection() {
-  let selection = $('input:checked');
-  let id = selection.val();
-  renderLogChorePageClick(id);
-  renderPayPageClick(id);
-}
-
 function renderLogChorePageClick(client_id) {
   $('#js-log-chore-page-button').on('click', function(event) {
     event.preventDefault();
-    getClientInfo(client_id, renderLogChorePage);
+    const selection = $('input:checked');
+    const id = selection.val();
+    getClientInfo(id, renderLogChorePage);
   });
 }
 
-
-//pass function to call getClientInfo as a parameter, it will then callback
 function getClientInfo(client_id, callback) {
+  console.log(client_id);
   const url = `http://localhost:8080/api/users/client/${client_id}`;
 
   fetch(url, {
@@ -183,11 +172,13 @@ function renderLogChorePage(data) {
     </section>
     `);
     getUserInfo(populateChores);
-    onChoreChange(client_id, totalValue);
+    submitLogChore(client_id, totalValue);
 }
 
 function populateChores(response) {
   let data = response.chore;
+  console.log(response);
+  console.log(data);
   for (let i = 0; i < data.length; i++) {
     const option = document.createElement('option');
     option.setAttribute('value', data[i].value);
@@ -197,19 +188,12 @@ function populateChores(response) {
   };
 }
 
-function onChoreChange(client_id, totalValue) {
-  let value = 'selectChore';
-  $('#js-chore-select').change(function() {
-    const select = document.getElementById('js-chore-select');
-    let value = select.options[select.selectedIndex].value;
-    submitLogChore(client_id, value, totalValue)
-  });
-}
-//submitLogChore never happens if there's no change, need a better order of operations...
-
-function submitLogChore(client_id, value, totalValue) {
+function submitLogChore(client_id, totalValue) {
   $('#js-log-chore-button').on('click', function(event) {
     event.preventDefault();
+    const select = document.getElementById('js-chore-select');
+    let value = select.options[select.selectedIndex].value;
+
     if (value === 'selectChore') {
       $('.js-error-message').text('Please select a chore');
     } else {
@@ -261,10 +245,12 @@ function logAnotherClick(data) {
   });
 }
 
-function renderPayPageClick(client_id) {
+function renderPayPageClick() {
   $('#js-pay-allowance-page-button').on('click', function(event) {
     event.preventDefault();
-    getClientInfo(client_id, renderPayPage);
+    const selection = $('input:checked');
+    const id = selection.val();
+    getClientInfo(id, renderPayPage);
   });
 }
 
