@@ -1,10 +1,74 @@
 
-/* .login {
-  text-align: right;
-} */
+body * {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #FFFFFF;
+}
+
+body::after {
+  content: "";
+  background: url(../images/fam-kitchen.jpg) no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  opacity: 0.5;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: -1;
+}
+
+header {
+  background: rgba(204, 175, 129, 0.5);
+  width: 100%;
+  padding: 1rem;
+  height: 4rem;
+}
+
+h1 {
+  display: inline-block;
+  margin: 0;
+  width: 100%
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vl {
+  height: 3rem;
+  border-left: 3px solid #70B38A;
+  padding: 0 10px 0 0;
+  margin-left: 10px;
+}
+
+.home {
+  margin-left: 15px;
+}
 
 #logo {
   float: left;
+  height: 2rem;
+  width: 3.5rem;
+  border-color: #000000;
+  border: 1px;
+}
+
+.login-nav {
+  float: right;
+}
+
+.homepage-container {
+  left: auto;
+  right: auto;
+  text-align: center;
 }
 
 .hidden {
@@ -37,5 +101,16 @@ a {
 }
 
 .js-error-message {
-  color: FF0000;
+  color: #FF0000;
+}
+
+input[type=button]{
+  height: 2rem;
+  background: #BAFFD4;
+  border-radius: 5px;
+  border-color: #70B38A;
+}
+
+.go-signup-button {
+  width: 8rem;
 }

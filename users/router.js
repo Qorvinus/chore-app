@@ -341,7 +341,9 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
 
   Client
     .findByIdAndUpdate(req.params.id, { $set: updated }, { new: true })
-    .then(updatedClient => res.status(204).json(updatedClient.serialize()))
+    .then(client => {
+      return res.status(204).json(client.serialize());
+    })
     .catch(err => res.status(500).json({ message: 'Internal server error ' }));
 })
 
