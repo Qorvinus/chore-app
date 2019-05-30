@@ -3,11 +3,11 @@
 function renderLoginClick() {
   $('#js-go-login-button').on('click', function(event) {
     event.preventDefault();
-    renderLogin();
+    renderLoginPage();
   });
 }
 
-function renderLogin() {
+function renderLoginPage() {
     $('#js-main-container').html(`
       <section role="section" class="login-container" id="js-login-conatiner">
         <form id="js-login" class="login">
@@ -79,11 +79,12 @@ function renderHome() {
       <span class="js-error-message"></span>
     </section>
     `);
-    getUserInfo();
+    getUserInfo(renderHomeClients);
+    onClientHomeCheck();
 }
 
-function getUserInfo() {
-  const url = 'http://localhost:8080/api/users/client';
+function getUserInfo(callback) {
+  const url = 'http://localhost:8080/api/users/user';
 
   fetch(url, {
     method: 'GET',
@@ -98,7 +99,7 @@ function getUserInfo() {
       }
       throw new Error(res.statusText);
     })
-  .then(response => renderHomeClients(response))
+  .then(response => callback(response))
   .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
     });
@@ -118,11 +119,10 @@ function renderHomeClients(data) {
         </li>
         `);
     };
-    onClientHomeCheck();
 }
 
 function onClientHomeCheck() {
-  $('.js-clients-home-radio').change(function() {
+  $('#js-render-clients-home').change('.js-clients-home-radio', function() {
     checkClientHomeSelection();
   });
 }
@@ -137,13 +137,13 @@ function checkClientHomeSelection() {
 function renderLogChorePageClick(client_id) {
   $('#js-log-chore-page-button').on('click', function(event) {
     event.preventDefault();
-    getClientInfoLog(client_id, renderLogChorePage);
+    getClientInfo(client_id, renderLogChorePage);
   });
 }
 
 
 //pass function to call getClientInfo as a parameter, it will then callback
-function getClientInfoLog(client_id, callback) {
+function getClientInfo(client_id, callback) {
   const url = `http://localhost:8080/api/users/client/${client_id}`;
 
   fetch(url, {
@@ -182,14 +182,53 @@ function renderLogChorePage(data) {
       <div class="js-error-message"></div>
     </section>
     `);
-    getChores(client_id, totalValue);
+    getUserInfo(populateChores);
+    onChoreChange(client_id, totalValue);
 }
 
-function getChores(client_id, totalValue) {
-  const url = 'http://localhost:8080/api/users/client';
+function populateChores(response) {
+  let data = response.chore;
+  for (let i = 0; i < data.length; i++) {
+    const option = document.createElement('option');
+    option.setAttribute('value', data[i].value);
+    option.text = data[i].choreName;
+    const select = document.getElementById('js-chore-select');
+    select.appendChild(option);
+  };
+}
+
+function onChoreChange(client_id, totalValue) {
+  let value = 'selectChore';
+  $('#js-chore-select').change(function() {
+    const select = document.getElementById('js-chore-select');
+    let value = select.options[select.selectedIndex].value;
+    submitLogChore(client_id, value, totalValue)
+  });
+}
+//submitLogChore never happens if there's no change, need a better order of operations...
+
+function submitLogChore(client_id, value, totalValue) {
+  $('#js-log-chore-button').on('click', function(event) {
+    event.preventDefault();
+    if (value === 'selectChore') {
+      $('.js-error-message').text('Please select a chore');
+    } else {
+      const newTotal = parseFloat(value) + parseFloat(totalValue);
+      addTotalValue(client_id, newTotal)
+    };
+  });
+}
+
+function addTotalValue(client_id, newTotal) {
+  const url = `http://localhost:8080/api/users/client/value/${client_id}`;
+  const data = {
+    id: `${client_id}`,
+    totalValue: newTotal
+  }
 
   fetch(url, {
-    method: 'GET',
+    method: 'PUT',
+    body: JSON.stringify(data),
     headers: {
       'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
       'Content-Type': 'application/json'
@@ -201,88 +240,10 @@ function getChores(client_id, totalValue) {
       }
       throw new Error(res.statusText);
     })
-  .then(response => populateChores(response.chore, client_id, totalValue))
+  .then(getClientInfo(client_id, logAnotherChore))
   .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
     });
-}
-
-function populateChores(data, client_id, totalValue) {
-  for (let i = 0; i < data.length; i++) {
-    const option = document.createElement('option');
-    option.setAttribute('value', data[i].value);
-    option.text = data[i].choreName;
-    const select = document.getElementById('js-chore-select');
-    select.appendChild(option);
-  };
-  onChoreChange(client_id, totalValue)
-}
-
-function onChoreChange(client_id, totalValue) {
-  $('#js-chore-select').change(function() {
-    const select = document.getElementById('js-chore-select');
-    const value = select.options[select.selectedIndex].value;
-    submitLogChore(value, client_id, totalValue);
-  });
-}
-//submitLogChore never happens if there's no change, need a better order of operations...
-
-function submitLogChore(value, client_id, totalValue) {
-  $('#js-log-chore-button').on('click', function(event) {
-    event.preventDefault();
-    if (value === 'selectChore') {
-      $('.js-error-message').text('Please select a chore');
-    } else {
-    const newTotal = parseFloat(value) + parseFloat(totalValue);
-    console.log(newTotal);
-    const url = `http://localhost:8080/api/users/client/value/${client_id}`;
-    const data = {
-      id: `${client_id}`,
-      totalValue: newTotal
-    }
-
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        throw new Error(res.statusText);
-      })
-    .then(getClientAnother(client_id))
-    .catch(err => {
-        $('.js-error-message').text(`Something went wrong: ${err.message}`);
-      });
-    };
-  });
-}
-
-function getClientAnother(client_id) {
-  const url = `http://localhost:8080/api/users/client/${client_id}`;
-
-  fetch(url, {
-    method: 'GET',
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    throw new Error(res.statusText);
-  })
-  .then(response => logAnotherChore(response))
-  .catch(err => {
-    $('.js-error-message').text(`Something went wrong: ${err.message}`);
-  });
 }
 
 function logAnotherChore(data) {
@@ -303,11 +264,11 @@ function logAnotherClick(data) {
 function renderPayPageClick(client_id) {
   $('#js-pay-allowance-page-button').on('click', function(event) {
     event.preventDefault();
-    getClientPay(client_id);
+    getClientInfo(client_id, renderPayPage);
   });
 }
 
-function getClientPay(client_id) {
+function getClientInfo(client_id, callback) {
   const url = `http://localhost:8080/api/users/client/${client_id}`;
 
   fetch(url, {
@@ -323,7 +284,7 @@ function getClientPay(client_id) {
     }
     throw new Error(res.statusText);
   })
-  .then(response => renderPayPage(response))
+  .then(response => callback(response))
   .catch(err => {
     $('.js-error-message').text(`Something went wrong: ${err.message}`);
   });
@@ -356,15 +317,15 @@ function payAllowanceClick(client_id, totalValue) {
 }
 
 function checkPayAmount(value, client_id, totalValue) {
-  if (value.length == 0) {
-    $('.js-error-message').text('Amount of allowance paid cannot be empty.');
+  if (value.length == 0 || value > totalValue) {
+    $('.js-error-message').text('Amount of allowance paid cannot be empty or cannot be more than the total Allowance');
   } else {
-    updateClientTotal(value, client_id, totalValue);
+    subtractClientTotal(value, client_id, totalValue);
   };
 }
 
-function updateClientTotal(value, client_id, totalValue) {
-  const newTotal = parseFloat(totalValue) - parseFloat(value);
+function subtractClientTotal(value, client_id, totalValue) {
+  const newTotal = parseFloat(totalValue).toFixed(2) - parseFloat(value).toFixed(2);
   const url = `http://localhost:8080/api/users/client/value/${client_id}`;
   const data = {
     id: `${client_id}`,
@@ -407,32 +368,12 @@ function renderEditClient() {
       <span class="js-error-message"></span>
     </section>
     `);
-    getClient();
+    getUserInfo(renderClient);
+    onClientCheck();
 }
 
-function getClient() {
-  const url = 'http://localhost:8080/api/users/client';
-
-  fetch(url, {
-    method: 'GET',
-    headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-  })
-  .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-  .then(response => renderClient(response.client))
-  .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
-}
-
-function renderClient(data) {
+function renderClient(response) {
+  const data = response.client;
   for (let i = 0; i < data.length; i++) {
     let totalValue = parseFloat(`${data[i].totalValue}`).toFixed(2);
     $('#js-render-clients-list').append(`
@@ -444,11 +385,10 @@ function renderClient(data) {
       </li>
       `);
     };
-    onClientCheck();
 }
 
 function onClientCheck() {
-  $('.js-client-radio').change(function() {
+  $('#js-render-clients-list').change('.js-client-radio', function() {
     checkClientSelection();
   });
 }
@@ -463,29 +403,7 @@ function checkClientSelection() {
 function renderEditClientPageClick(client_id) {
   $('.js-client-edit-button').on('click', function(event) {
     event.preventDefault();
-    getClientInfo(client_id);
-  });
-}
-
-function getClientInfo(client_id) {
-  const url = `http://localhost:8080/api/users/client/${client_id}`;
-
-  fetch(url, {
-    method: 'GET',
-    headers: {
-      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-      'Content-Type': 'application/json'
-    }
-  })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    throw new Error(res.statusText);
-  })
-  .then(response => renderEditClientPage(response))
-  .catch(err => {
-    $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    getClientInfo(client_id, renderEditClientPage);
   });
 }
 
@@ -503,36 +421,40 @@ function renderEditClientPage(data) {
       <span class="js-error-message"></span>
     </section>
     `);
-  editClient(client_id);
+  editClientSubmit(client_id);
 }
 
-function editClient(client_id) {
+function editClientSubmit(client_id) {
   $('#js-edit-client-submit').on('click', function(event) {
     event.preventDefault();
     const editName = $('#js-edit-client-text').val();
-    const url = `http://localhost:8080/api/users/client/${client_id}`;
 
     if (checkClientValue(editName) === true) {
-    const data = {
-      id: client_id,
-      name: editName
-    }
-
-    fetch(url, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(renderEditClient())
-    .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
+      updateClient(client_id, editName);
   } else {
     $('.js-error-message').text('Name cannot be empty.');
   }
+  });
+}
+
+function updateClient(client_id, editName) {
+  const url = `http://localhost:8080/api/users/client/${client_id}`;
+  const data = {
+    id: client_id,
+    name: editName
+  }
+
+  fetch(url, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(renderEditClient())
+  .catch(err => {
+    $('.js-error-message').text(`Something went wrong: ${err.message}`);
   });
 }
 
@@ -579,60 +501,70 @@ function renderAddClientClick() {
 
 function renderAddClient() {
     $('#js-main-container').html(`
-      <section role="section" id="js-add-client" class="add-client-container">
+      <section role="section" id="js-add-client-container" class="add-client-container">
         <p>Add instructions</p>
         <form id="js-add-client-form">
           <span>Name of client:</span>
           <input type="text" id="js-add-client-text">
           <input type="submit" value="add" id="js-add-client-button" class="hover">
         </form>
-        <div id="js-render-client-success"></div>
         <span class="js-error-message"></span>
       </section>
       `)
-    addClient();
+    addClientClick();
   }
 
-function addClient() {
+function addClientClick() {
   $('#js-add-client-button').on('click', function(event) {
     event.preventDefault();
     const newName = $('#js-add-client-text').val();
 
-    if (newName.length == 0) {
+    if (checkNewClientName(newName) === false) {
       $('.js-error-message').text('Name cannot be empty');
     } else {
-    const url = 'http://localhost:8080/api/users/client';
-    const data = {
-      name: newName
-    }
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-    .then(response => renderNewClient(response))
-    .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
-  };
+      addClient(newName);
+    };
   });
 }
 
+function addClient(newName) {
+  const url = 'http://localhost:8080/api/users/client';
+  const data = {
+    name: newName
+  }
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  })
+  .then(response => renderNewClient(response))
+  .catch(err => {
+    $('.js-error-message').text(`Something went wrong: ${err.message}`);
+  });
+}
+
+function checkNewClientName(newName) {
+  if (newName.length == 0) {
+    return false;
+  } else {
+    return true;
+  };
+}
+
 function renderNewClient(response) {
-  $('#js-render-client-success').html(`
+  $('#js-add-client-container').html(`
     <p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client-button" value="Add another?" class="hover">
     <span class="js-error-message"></span>
     `)
-  document.getElementById('js-add-client-text').value = "";
   addAnotherClient();
 }
 
@@ -662,56 +594,65 @@ function renderAddChore() {
           <input type="submit" value="add" id="js-add-chore-button" class="hover">
         </form>
         <span class="js-error-message"></span>
-        <div id="js-render-chore-success"></div>
       </section>
       `);
-    addChore();
+    addChoreClick();
 }
 
-function addChore() {
+function addChoreClick() {
   $('#js-add-chore-button').on('click', function(event) {
     event.preventDefault();
     const newChore = $('#js-add-chore-text').val();
     const newValue = $('#js-add-chore-value-number').val();
 
-    if (newChore.length == 0 || newValue.length == 0) {
+    if (checkNewChore(newChore, newValue) === false) {
       $('.js-error-message').text('Chore and/or Value cannot be empty.');
     } else {
-    const url = 'http://localhost:8080/api/users/chore';
-    const data = {
-        choreName: newChore,
-        value: newValue
-    }
-
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-    .then(response => renderNewChore(response))
-    .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
-  };
+      addChore(newChore, newValue);
+    };
   });
 }
 
+function addChore(newChore, newValue) {
+  const url = 'http://localhost:8080/api/users/chore';
+  const data = {
+      choreName: newChore,
+      value: newValue
+  }
+
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  })
+  .then(response => renderNewChore(response))
+  .catch(err => {
+    $('.js-error-message').text(`Something went wrong: ${err.message}`);
+  });
+}
+
+function checkNewChore(newChore, newValue) {
+  if (newChore.length == 0 || newValue.length == 0) {
+    return false;
+  } else {
+    return true;
+  };
+}
+
 function renderNewChore(response) {
-  $('#js-render-chore-success').html(`
+  $('#js-add-chore-container').html(`
     <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore-button" value="Add another?" class="hover">
     <span class="js-error-message"></span>
     `);
-  document.getElementById('js-add-chore-text').value = "";
-  document.getElementById('js-add-chore-value-number').value = "";
   addAnotherChore();
 }
 
@@ -744,32 +685,12 @@ function renderEditChore() {
       <span class="js-error-message"></span>
     </section>
     `)
-    getChore();
+    getUserInfo(renderChore);
+    onChoreCheck();
 }
 
-function getChore() {
-  const url = 'http://localhost:8080/api/users/chore';
-
-  fetch(url, {
-    method: 'GET',
-    headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-        'Content-Type': 'application/json'
-      }
-  })
-  .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-  .then(response => renderChore(response.chore))
-  .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
-}
-
-function renderChore(data) {
+function renderChore(response) {
+  const data = response.chore;
   for (let i = 0; i < data.length; i++) {
     let value = parseFloat(`${data[i].value}`).toFixed(2);
     $('#js-render-chore-list').append(`
@@ -781,11 +702,10 @@ function renderChore(data) {
       </li>
       `);
   };
-  onChoreCheck();
 }
 
 function onChoreCheck() {
-  $('.js-chore-radio').change(function() {
+  $('#js-render-chore-list').change('.js-chore-radio', function() {
     checkChoreSelection();
   });
 }
@@ -793,7 +713,6 @@ function onChoreCheck() {
 function checkChoreSelection() {
   let selection = $('input:checked');
   let id = selection.val();
-  console.log(id);
   renderEditChorePageClick(id);
   deleteChore(id);
 }
@@ -801,11 +720,11 @@ function checkChoreSelection() {
 function renderEditChorePageClick(chore_id) {
   $('.js-chore-edit-button').on('click', function(event) {
     event.preventDefault();
-    getChoreInfo(chore_id);
+    getChoreInfo(chore_id, renderEditChorePage);
   });
 }
 
-function getChoreInfo(chore_id) {
+function getChoreInfo(chore_id, callback) {
   const url = `http://localhost:8080/api/users/chore/${chore_id}`;
 
   fetch(url, {
@@ -821,7 +740,7 @@ function getChoreInfo(chore_id) {
     }
     throw new Error(res.statusText);
   })
-  .then(response => renderEditChorePage(response))
+  .then(response => callback(response))
   .catch(err => {
     $('.js-error-message').text(`Something went wrong: ${err.message}`);
   });
@@ -843,43 +762,46 @@ function renderEditChorePage(data) {
     </section>
     `);
     let chore_id = `${data.id}`;
-    editChore(chore_id);
+    editChoreClick(chore_id);
 }
 
-function editChore(chore_id) {
+function editChoreClick(chore_id) {
   $('#js-edit-chore-submit').on('click', function(event) {
     event.preventDefault();
-    const editChore = $('#js-edit-chore-text').val();
-    const editValue = $('#js-edit-chore-value-number').val();
-    const url = `http://localhost:8080/api/users/chore/${chore_id}`;
+    const updatedChore = $('#js-edit-chore-text').val();
+    const updatedValue = $('#js-edit-chore-value-number').val();
 
-    if (checkChoreValues(editChore, editValue) === true) {
-      const data = {
-        id: chore_id,
-        choreName: editChore,
-        value: editValue
-      }
-
-      fetch(url, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-        headers: {
-          'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
-          'Content-Type': 'application/json'
-        }
-      })
-      .then(renderEditChore())
-      .catch(err => {
-        $('.js-error-message').text(`Something went wrong: ${err.message}`);
-      });
+    if (checkEditChore(updatedChore, updatedValue) === false) {
+        $('.js-error-message').text('Chore name or value cannot be empty.');
     } else {
-      $('.js-error-message').text('Chore name or value cannot be empty.');
+      editChore(chore_id, updatedChore, updatedValue);
     }
   });
 }
 
+function editChore(chore_id, updatedChore, updatedValue) {
+  const url = `http://localhost:8080/api/users/chore/${chore_id}`;
+  const data = {
+    id: chore_id,
+    choreName: updatedChore,
+    value: updatedValue
+  }
 
-function checkChoreValues(name, value) {
+  fetch(url, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    headers: {
+      'Authorization': 'Bearer ' + localStorage.getItem('authToken'),
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(renderEditChore())
+  .catch(err => {
+    $('.js-error-message').text(`Something went wrong: ${err.message}`);
+  });
+}
+
+function checkEditChore(name, value) {
   if (name.length == 0 || value.length == 0) {
     return false;
   } else {
@@ -936,41 +858,57 @@ function renderSignUp() {
       <span class="js-error-message"></span>
     </section>
     `);
-    signUp();
+    signUpClick();
 }
 
-function signUp() {
+function signUpClick() {
   $('#js-signup-button').on('click', function(event) {
     event.preventDefault();
     const firstName = $('#js-firstname-signup').val();
     const lastName = $('#js-lastname-signup').val();
     const username = $('#js-username-signup').val();
     const password = $('#js-password-signup').val();
-    //add validation(ideally both)
-    const data = {
-      firstName: firstName,
-      lastName: lastName,
-      username: username,
-      password: password
 
+    if (checkSignUp(firstName, lastName, username, password) === false) {
+      $('.js-error-message').text('Fields cannot be empty, and password has to be at least 8 characters long.')
+    } else {
+      signUp(firstName, lastName, username, password);
     }
-    const url = 'http://localhost:8080/api/users/signup';
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-    .then(renderLogin())
-    .catch(err => console.error('Error', err));
   });
+}
+
+function checkSignUp(firstName, lastName, username, password) {
+  if (firstName.lenth == 0 || lastName.lenth == 0 || username.lenth == 0 || password.length < 8) {
+    return false;
+  } else {
+    return true;
+  };
+}
+
+function signUp(firstName, lastName, username, password) {
+  const data = {
+    firstName: firstName,
+    lastName: lastName,
+    username: username,
+    password: password
+
+  }
+  const url = 'http://localhost:8080/api/users/signup';
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  })
+  .then(renderLoginPage())
+  .catch(err => console.error('Error', err));
 }
 
 $(function() {

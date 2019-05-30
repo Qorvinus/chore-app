@@ -204,7 +204,7 @@ router.delete('/client/:id', jwtAuth, (req, res) => {
     });
 })
 
-router.get('/client', jwtAuth, (req, res) => {
+router.get('/user', jwtAuth, (req, res) => {
   User
     .findById(req.user)
     .populate('client')
@@ -347,18 +347,19 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error ' }));
 })
 
-router.get('/chore', jwtAuth, (req, res) => {
-  User
-    .findById(req.user)
-    .populate('chore')
-    .exec((err, user) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: 'Internal server error' });
-      }
-      return res.json(user.serialize());
-    });
-})
+//don't need replaced with GET /user
+// router.get('/chore', jwtAuth, (req, res) => {
+//   User
+//     .findById(req.user)
+//     .populate('chore')
+//     .exec((err, user) => {
+//       if (err) {
+//         console.error(err);
+//         return res.status(500).json({ error: 'Internal server error' });
+//       }
+//       return res.json(user.serialize());
+//     });
+// })
 
 //remove me later after testing complete
 router.get('/users', (req, res) => {
