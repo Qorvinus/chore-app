@@ -104,11 +104,15 @@ a {
   color: #FF0000;
 }
 
-input[type=button]{
+input[type=button], input[type=submit] {
   height: 2rem;
   background: #BAFFD4;
   border-radius: 5px;
   border-color: #70B38A;
+}
+
+.js-client-delete-button:hover, .js-chore-delete-button:hover {
+  background: #FF0000;
 }
 
 .go-signup-button {

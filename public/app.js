@@ -1,6 +1,6 @@
 'use strict';
 
-function renderLoginClick() {
+function onLoginClick() {
   $('#js-go-login-button').on('click', function(event) {
     event.preventDefault();
     renderLoginPage();
@@ -8,67 +8,87 @@ function renderLoginClick() {
 }
 
 function renderLoginPage() {
-    $('#js-main-container').html(`
-      <section role="section" class="login-container" id="js-login-conatiner">
-        <form id="js-login" class="login">
-          <span class="username">User Name:<input id="js-username" type="text" name="username"></span>
-          <span class="password">Password:<input id="js-password" type="password" name="password"></span>
-          <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
-        </form>
-      </section>
-      `);
-    userLogin();
+    $('#js-main-container').html(generateLoginPage());
+    onUserLogin();
 }
 
-function userLogin(username, password) {
+function generateLoginPage() {
+  return `
+    <section role="section" class="login-container" id="js-login-conatiner">
+      <form id="js-login" class="login">
+        <span class="username">User Name:<input id="js-username" type="text" name="username" autofocus></span>
+        <span class="password">Password:<input id="js-password" type="password" name="password"></span>
+        <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
+      </form>
+    </section>
+    `
+}
+
+function onUserLogin(username, password) {
   $('#js-login-button').on('click', function(event) {
     event.preventDefault();
     const username = $('#js-username').val();
     const password = $('#js-password').val();
 
-    const data = {
-      username: username,
-      password: password
-    };
-
-    const url = 'http://localhost:8080/api/auth/login';
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-    .then(response => {
-      localStorage.setItem('authToken', response.authToken)
-      renderDashboard()
-    })
-    .catch(err => console.error('Error', err));
+    userLogin(username, password);
   });
 }
 
-function renderDashboard() {
+function userLogin(username, password) {
+  const data = {
+    username: username,
+    password: password
+  };
+
+  const url = 'http://localhost:8080/api/auth/login';
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  })
+  .then(response => {
+    localStorage.setItem('authToken', response.authToken);
+    prepareDashboard();
+  })
+  .catch(err => console.error('Error', err));
+}
+
+function prepareDashboard() {
+  setNav();
+  renderHome();
+  goHomeClick();
+  onAddClientClick();
+  onAddChoreClick();
+  onEditChoreClick();
+  onEditClientClick();
+}
+
+function setNav() {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
   $('h1').addClass('hidden');
-  renderHome();
-  goHomeClick();
-  renderAddClientClick();
-  renderAddChoreClick();
-  renderEditChoreClick();
-  renderEditClientClick();
 }
 
 function renderHome() {
-  $('#js-main-container').html(`
+  $('#js-main-container').html(generateRenderHome());
+    getUserInfo(renderHomeClients);
+    onLogChorePageClick();
+    onPayPageClick();
+}
+
+function generateRenderHome() {
+  return `
     <section role="section" id="js-dashboard-container" class="dashboard-container">
-      <div>Clients:</div>
+    <p>On the home page you can select a client and choose to either log new chores to them or pay out an allowance.</p>
+      <p>Clients:</p>
       <form>
         <fieldset>
           <ul id="js-render-clients-home"></ul>
@@ -76,12 +96,9 @@ function renderHome() {
           <input type="button" value="Pay Allowance" id="js-pay-allowance-page-button" class="hover">
         </fieldset>
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
-    `);
-    getUserInfo(renderHomeClients);
-    renderLogChorePageClick();
-    renderPayPageClick();
+    `
 }
 
 function getUserInfo(callback) {
@@ -122,7 +139,7 @@ function renderHomeClients(data) {
     };
 }
 
-function renderLogChorePageClick(client_id) {
+function onLogChorePageClick(client_id) {
   $('#js-log-chore-page-button').on('click', function(event) {
     event.preventDefault();
     const selection = $('input:checked');
@@ -132,7 +149,6 @@ function renderLogChorePageClick(client_id) {
 }
 
 function getClientInfo(client_id, callback) {
-  console.log(client_id);
   const url = `http://localhost:8080/api/users/client/${client_id}`;
 
   fetch(url, {
@@ -157,28 +173,32 @@ function getClientInfo(client_id, callback) {
 function renderLogChorePage(data) {
   const client_id = data.id;
   const totalValue = data.totalValue;
-  $('#js-main-container').html(`
-    <section role="section" id="js-log-chore-container" class="log-chore-container">
-      <p>Add instructions</p>
-      <p>Adding a new chore log to ${data.name}.</p>
-      <form>
-        <label for="select-chore">Select chore to add:</label>
-          <select name="select-chore" id="js-chore-select" class="drop-down" required>
-            <option value="selectChore" selected>Select Chore</option>
-          </select>
-          <input type="submit" value="Log Chore" id="js-log-chore-button" class="log-chore-button hover">
-      </form>
-      <div class="js-error-message"></div>
-    </section>
-    `);
+  $('#js-main-container').html(generateLogChorePage(data))
     getUserInfo(populateChores);
     submitLogChore(client_id, totalValue);
 }
 
+function generateLogChorePage(data) {
+  return `
+    <section role="section" id="js-log-chore-container" class="log-chore-container">
+      <p>Please select a chore to log for the selected client.</p>
+      <p>Adding a new chore log to ${data.name}.</p>
+      <form>
+        <fieldset>
+          <label for="select-chore">Select chore to add:</label>
+            <select name="select-chore" id="js-chore-select" class="drop-down" required>
+            <option value="selectChore" selected>Select Chore</option>
+            </select>
+            <input type="submit" value="Log Chore" id="js-log-chore-button" class="log-chore-button hover">
+          </fieldset>
+      </form>
+      <p class="js-error-message"></p>
+    </section>
+    `;
+}
+
 function populateChores(response) {
   let data = response.chore;
-  console.log(response);
-  console.log(data);
   for (let i = 0; i < data.length; i++) {
     const option = document.createElement('option');
     option.setAttribute('value', data[i].value);
@@ -195,7 +215,7 @@ function submitLogChore(client_id, totalValue) {
     let value = select.options[select.selectedIndex].value;
 
     if (value === 'selectChore') {
-      $('.js-error-message').text('Please select a chore');
+      $('.js-error-message').text('Please select a chore.');
     } else {
       const newTotal = parseFloat(value) + parseFloat(totalValue);
       addTotalValue(client_id, newTotal)
@@ -206,7 +226,7 @@ function submitLogChore(client_id, totalValue) {
 function addTotalValue(client_id, newTotal) {
   const url = `http://localhost:8080/api/users/client/value/${client_id}`;
   const data = {
-    id: `${client_id}`,
+    id: client_id,
     totalValue: newTotal
   }
 
@@ -231,21 +251,25 @@ function addTotalValue(client_id, newTotal) {
 }
 
 function logAnotherChore(data) {
-  $('#js-log-chore-container').html(`
-    <p>${data.name} now has a total allowance of: $${data.totalValue}</p>
-    <input type="button" value="Log another chore?" id="js-log-another-button" class="hover">
-    `);
-    logAnotherClick(data);
+  $('#js-log-chore-container').html(generateLogAnotherChore(data));
+    onLogAnotherClick(data);
 }
 
-function logAnotherClick(data) {
+function generateLogAnotherChore(data) {
+  return `
+    <p>${data.name} now has a total allowance of: $${data.totalValue}</p>
+    <input type="submit" value="Log another chore?" id="js-log-another-button" class="hover">
+    `
+}
+
+function onLogAnotherClick(data) {
   $('#js-log-another-button').on('click', function(event) {
     event.preventDefault();
     renderLogChorePage(data);
   });
 }
 
-function renderPayPageClick() {
+function onPayPageClick() {
   $('#js-pay-allowance-page-button').on('click', function(event) {
     event.preventDefault();
     const selection = $('input:checked');
@@ -279,22 +303,26 @@ function getClientInfo(client_id, callback) {
 function renderPayPage(data) {
   const client_id = data.id;
   const totalValue = data.totalValue;
-  $('#js-main-container').html(`
-    <section role="section" id="js-pay-allowance-container" class="pay-allowance-container">
-      <p>Add instructions</p>
-      <p>Pay out allowance to ${data.name}.</p>
-      <form>
-        <label for="allowance">Enter amount to payout:</label>
-          <input type="number" value="0" id="js-pay-allowance-text" required>
-          <input type="submit" value="Pay Allowance" id="js-pay-allowance-button" class="pay-allowance-button hover">
-      </form>
-      <div class="js-error-message"></div>
-    </section>
-    `);
-    payAllowanceClick(client_id, totalValue);
+  $('#js-main-container').html(generateRenderPayPage(data));
+    onPayAllowanceClick(client_id, totalValue);
 }
 
-function payAllowanceClick(client_id, totalValue) {
+function generateRenderPayPage(data) {
+  return `
+    <section role="section" id="js-pay-allowance-container" class="pay-allowance-container">
+      <p>Please enter an amount of equal or lesser value to pay out to the selected client.</p>
+      <p>Pay out allowance to ${data.name}.  Current total allowance available is $${data.totalValue}.</p>
+      <form>
+        <label for="allowance">Enter amount to payout:</label>
+          <input type="number" value="0" id="js-pay-allowance-text" autofocus required>
+          <input type="submit" value="Pay Allowance" id="js-pay-allowance-button" class="pay-allowance-button hover">
+      </form>
+      <p class="js-error-message"></p>
+    </section>
+    `
+}
+
+function onPayAllowanceClick(client_id, totalValue) {
   $('#js-pay-allowance-button').on('click', function(event) {
     event.preventDefault();
     const value = $('#js-pay-allowance-text').val();
@@ -304,18 +332,18 @@ function payAllowanceClick(client_id, totalValue) {
 
 function checkPayAmount(value, client_id, totalValue) {
   if (value.length == 0 || value > totalValue) {
-    $('.js-error-message').text('Amount of allowance paid cannot be empty or cannot be more than the total Allowance');
+    $('.js-error-message').text('Amount of allowance paid cannot be empty or cannot be more than the total Allowance.');
   } else {
-    subtractClientTotal(value, client_id, totalValue);
+    const newTotal = parseFloat(totalValue).toFixed(2) - parseFloat(value).toFixed(2);
+    subtractClientTotal(client_id, newTotal);
   };
 }
 
-function subtractClientTotal(value, client_id, totalValue) {
-  const newTotal = parseFloat(totalValue).toFixed(2) - parseFloat(value).toFixed(2);
+function subtractClientTotal(client_id, newTotal) {
   const url = `http://localhost:8080/api/users/client/value/${client_id}`;
   const data = {
     id: `${client_id}`,
-    totalValue: newTotal
+    totalValue: `${newTotal}`
   }
 
   fetch(url, {
@@ -332,7 +360,7 @@ function subtractClientTotal(value, client_id, totalValue) {
     });
 }
 
-function renderEditClientClick() {
+function onEditClientClick() {
   $('.js-go-edit-client-button').on('click', function(event) {
     event.preventDefault();
     renderEditClient();
@@ -340,9 +368,15 @@ function renderEditClientClick() {
 }
 
 function renderEditClient() {
-  $('#js-main-container').html(`
+  $('#js-main-container').html(generateRenderEditClient());
+    getUserInfo(renderClient);
+    onClientCheck();
+}
+
+function generateRenderEditClient() {
+  return `
     <section role="section" class="edit-client-container" id="js-edit-client-container">
-      Needs to be updated
+      <p>Select a client to either edit or delete.</p>
       <div>Clients:</div>
       <form>
         <fieldset>
@@ -351,11 +385,9 @@ function renderEditClient() {
           <input type="button" value="Delete" class="js-client-delete-button hover">
         </fieldset>
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
-    `);
-    getUserInfo(renderClient);
-    onClientCheck();
+    `
 }
 
 function renderClient(response) {
@@ -382,11 +414,11 @@ function onClientCheck() {
 function checkClientSelection() {
   let selection = $('input:checked');
   let id = selection.val();
-  renderEditClientPageClick(id);
-  deleteClient(id);
+  onEditClientPageClick(id);
+  onDeleteClient(id);
 }
 
-function renderEditClientPageClick(client_id) {
+function onEditClientPageClick(client_id) {
   $('.js-client-edit-button').on('click', function(event) {
     event.preventDefault();
     getClientInfo(client_id, renderEditClientPage);
@@ -395,19 +427,23 @@ function renderEditClientPageClick(client_id) {
 
 function renderEditClientPage(data) {
   const client_id = data.id;
-  $('#js-main-container').html(`
+  $('#js-main-container').html(generateRenderEditClientPage(data));
+  editClientSubmit(client_id);
+}
+
+function generateRenderEditClientPage(data) {
+  return `
     <section role="section" id="js-edit-client-container" class="edit-client-container">
-      <p>Add instructions</p>
+      <p>Enter the clients updated name.</p>
       <p>Currently editing client: ${data.name}.</p>
       <form id="js-edit-client-name">
         <span>Edit name of client</span>
-        <input type="text" value="${data.name}" id="js-edit-client-text">
+        <input type="text" value="${data.name}" id="js-edit-client-text" autofocus>
         <input type="submit" value="Submit" id="js-edit-client-submit" class="hover">
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
-    `);
-  editClientSubmit(client_id);
+    `
 }
 
 function editClientSubmit(client_id) {
@@ -415,7 +451,7 @@ function editClientSubmit(client_id) {
     event.preventDefault();
     const editName = $('#js-edit-client-text').val();
 
-    if (checkClientValue(editName) === true) {
+    if (checkClientValue(editName) === false) {
       updateClient(client_id, editName);
   } else {
     $('.js-error-message').text('Name cannot be empty.');
@@ -445,18 +481,19 @@ function updateClient(client_id, editName) {
 }
 
 function checkClientValue(name) {
-  if (name.length == 0) {
-    return false;
-  } else {
-    return true;
-  };
+  return name.length == 0;
+}
+
+function onDeleteClient(client_id) {
+  $('.js-client-delete-button').on('click', function(event) {
+    event.preventDefault();
+    deleteClient(client_id);
+  });
 }
 
 function deleteClient(client_id) {
-  $('.js-client-delete-button').on('click', function(event) {
-    event.preventDefault();
     const url = `http://localhost:8080/api/users/client/${client_id}`;
-    console.log(`Deleting client with id: ${client_id}`);
+
     fetch(url, {
       method: 'DELETE',
       headers: {
@@ -468,7 +505,6 @@ function deleteClient(client_id) {
     .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
     });
-  });
 }
 
 function goHomeClick() {
@@ -478,7 +514,7 @@ function goHomeClick() {
   });
 }
 
-function renderAddClientClick() {
+function onAddClientClick() {
   $('.js-go-add-client-button').on('click', function(event) {
     event.preventDefault();
     renderAddClient();
@@ -486,26 +522,30 @@ function renderAddClientClick() {
 }
 
 function renderAddClient() {
-    $('#js-main-container').html(`
-      <section role="section" id="js-add-client-container" class="add-client-container">
-        <p>Add instructions</p>
-        <form id="js-add-client-form">
-          <span>Name of client:</span>
-          <input type="text" id="js-add-client-text">
-          <input type="submit" value="add" id="js-add-client-button" class="hover">
-        </form>
-        <span class="js-error-message"></span>
-      </section>
-      `)
+    $('#js-main-container').html(generateRenderAddClient());
     addClientClick();
   }
+
+function generateRenderAddClient() {
+  return `
+    <section role="section" id="js-add-client-container" class="add-client-container">
+      <p>Enter the name of your new client.</p>
+      <form id="js-add-client-form">
+        <span>Name:</span>
+        <input type="text" id="js-add-client-text" autofocus>
+        <input type="submit" value="add" id="js-add-client-button" class="hover">
+      </form>
+      <p class="js-error-message"></p>
+    </section>
+    `
+}
 
 function addClientClick() {
   $('#js-add-client-button').on('click', function(event) {
     event.preventDefault();
     const newName = $('#js-add-client-text').val();
 
-    if (checkNewClientName(newName) === false) {
+    if (checkNewClientName(newName) === true) {
       $('.js-error-message').text('Name cannot be empty');
     } else {
       addClient(newName);
@@ -539,19 +579,19 @@ function addClient(newName) {
 }
 
 function checkNewClientName(newName) {
-  if (newName.length == 0) {
-    return false;
-  } else {
-    return true;
-  };
+  return newName.length == 0;
 }
 
 function renderNewClient(response) {
-  $('#js-add-client-container').html(`
-    <p>${response.name} has been successfully created!</p><input type="button" id="js-add-another-client-button" value="Add another?" class="hover">
-    <span class="js-error-message"></span>
-    `)
+  $('#js-add-client-container').html(generateRenderNewClient(response));
   addAnotherClient();
+}
+
+function generateRenderNewClient(response) {
+  return `
+    <p>${response.name} has been successfully created!</p><input type="submit" id="js-add-another-client-button" value="Add another?" class="hover">
+    <p class="js-error-message"></p>
+    `
 }
 
 function addAnotherClient() {
@@ -561,7 +601,7 @@ function addAnotherClient() {
   });
 }
 
-function renderAddChoreClick() {
+function onAddChoreClick() {
   $('.js-go-add-chore-button').on('click', function(event) {
     event.preventDefault();
     renderAddChore();
@@ -569,20 +609,24 @@ function renderAddChoreClick() {
 }
 
 function renderAddChore() {
-    $('#js-main-container').html(`
-      <section role="section" id="js-add-chore-container" class="add-chore-container">
-        <p>Add instructions</p>
-        <form id="js-add-chore-form">
-          <span>Name of chore:</span>
-          <input type="text" id="js-add-chore-text">
-          <span>Value of chore:</span>
-          <input type="number" id="js-add-chore-value-number">
-          <input type="submit" value="add" id="js-add-chore-button" class="hover">
-        </form>
-        <span class="js-error-message"></span>
-      </section>
-      `);
+    $('#js-main-container').html(generateRenderAddChore());
     addChoreClick();
+}
+
+function generateRenderAddChore() {
+  return `
+    <section role="section" id="js-add-chore-container" class="add-chore-container">
+      <p>Enter the name of the new chore as well as the respective value for the chore.</p>
+      <form id="js-add-chore-form">
+        <span>Name of chore:</span>
+        <input type="text" id="js-add-chore-text" autofocus>
+        <span>Value of chore:</span>
+        <input type="number" id="js-add-chore-value-number">
+        <input type="submit" value="add" id="js-add-chore-button" class="hover">
+      </form>
+      <p class="js-error-message"></p>
+    </section>
+    `
 }
 
 function addChoreClick() {
@@ -635,11 +679,15 @@ function checkNewChore(newChore, newValue) {
 }
 
 function renderNewChore(response) {
-  $('#js-add-chore-container').html(`
-    <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="button" id="js-add-another-chore-button" value="Add another?" class="hover">
-    <span class="js-error-message"></span>
-    `);
+  $('#js-add-chore-container').html(generateRenderNewChore(response));
   addAnotherChore();
+}
+
+function generateRenderNewChore(response) {
+  return `
+    <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="submit" id="js-add-another-chore-button" value="Add another?" class="hover">
+    <p class="js-error-message"></p>
+    `
 }
 
 function addAnotherChore() {
@@ -649,7 +697,7 @@ function addAnotherChore() {
   });
 }
 
-function renderEditChoreClick() {
+function onEditChoreClick() {
   $('.js-go-edit-chore-button').on('click', function(event) {
     event.preventDefault();
     renderEditChore();
@@ -657,9 +705,15 @@ function renderEditChoreClick() {
 }
 
 function renderEditChore() {
-  $('#js-main-container').html(`
+  $('#js-main-container').html(generateRenderEditChore());
+    getUserInfo(renderChore);
+    onChoreCheck();
+}
+
+function generateRenderEditChore() {
+  return `
     <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container">
-      <p>Add instructions</p>
+      <p>Select a chore that you wish to edit or delete.</p>
       <div>List of chores:</div>
       <form>
         <fieldset>
@@ -668,11 +722,9 @@ function renderEditChore() {
           <input type="button" value="Delete" class="js-chore-delete-button hover">
         </fieldset>
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
-    `)
-    getUserInfo(renderChore);
-    onChoreCheck();
+    `
 }
 
 function renderChore(response) {
@@ -699,11 +751,11 @@ function onChoreCheck() {
 function checkChoreSelection() {
   let selection = $('input:checked');
   let id = selection.val();
-  renderEditChorePageClick(id);
+  onEditChorePageClick(id);
   deleteChore(id);
 }
 
-function renderEditChorePageClick(chore_id) {
+function onEditChorePageClick(chore_id) {
   $('.js-chore-edit-button').on('click', function(event) {
     event.preventDefault();
     getChoreInfo(chore_id, renderEditChorePage);
@@ -733,22 +785,26 @@ function getChoreInfo(chore_id, callback) {
 }
 
 function renderEditChorePage(data) {
-  $('#js-main-container').html(`
+  $('#js-main-container').html(generateEditChorePage(data));
+    let chore_id = `${data.id}`;
+    editChoreClick(chore_id);
+}
+
+function generateEditChorePage(data) {
+  return `
     <section role="section" id="js-edit-chore-container" class="edit-chore-container">
-      <p>Add instructions</p>
+      <p>Here you can update the name of the chore as well as how much the chore's value.</p>
       <p>Currently editing ${data.choreName}.</p>
       <form id="js-edit-chore-prop">
         <span>Edit name of chore</span>
-        <input type="text" value="${data.choreName}" id="js-edit-chore-text">
+        <input type="text" value="${data.choreName}" id="js-edit-chore-text" autofocus>
         <span>Edit value of chore</span>
         <input type="number" value="${data.value}" id="js-edit-chore-value-number">
         <input type="submit" value="Submit" id="js-edit-chore-submit" class="hover">
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
-    `);
-    let chore_id = `${data.id}`;
-    editChoreClick(chore_id);
+    `
 }
 
 function editChoreClick(chore_id) {
@@ -813,7 +869,7 @@ function deleteChore(chore_id) {
   });
 }
 
-function renderSignUpClick() {
+function onSignUpClick() {
   $('#js-go-signup-button').on('click', function(event) {
     event.preventDefault();
     renderSignUp();
@@ -831,17 +887,19 @@ function renderSignUp() {
   $('#js-main-container').html(`
     <section role="section" class="signup-container" id="js-signup-container">
       <form id="js-signup-form">
-        <span class="block">First Name:</span>
-        <input type="text" id="js-firstname-signup">
-        <span class="block">Last Name:</span>
-        <input type="text" id="js-lastname-signup">
-        <span class="block">User Name:</span>
-        <input type="text" id="js-username-signup">
-        <span class="block">Password:</span>
-        <input type="password" id="js-password-signup">
-        <input id="js-signup-button" type="submit" value="Sign-Up!"  class="hover">
+        <fieldset>
+          <span class="block">First Name:</span>
+          <input type="text" id="js-firstname-signup" autofocus>
+          <span class="block">Last Name:</span>
+          <input type="text" id="js-lastname-signup">
+          <span class="block">User Name:</span>
+          <input type="text" id="js-username-signup">
+          <span class="block">Password:</span>
+          <input type="password" id="js-password-signup">
+          <input id="js-signup-button" type="submit" value="Sign-Up!"  class="hover">
+        </fieldset>
       </form>
-      <span class="js-error-message"></span>
+      <p class="js-error-message"></p>
     </section>
     `);
     signUpClick();
@@ -856,7 +914,7 @@ function signUpClick() {
     const password = $('#js-password-signup').val();
 
     if (checkSignUp(firstName, lastName, username, password) === false) {
-      $('.js-error-message').text('Fields cannot be empty, and password has to be at least 8 characters long.')
+      $('.js-error-message').text('Fields cannot be empty, and password must be at least 8 characters long.')
     } else {
       signUp(firstName, lastName, username, password);
     }
@@ -898,7 +956,7 @@ function signUp(firstName, lastName, username, password) {
 }
 
 $(function() {
-  renderLoginClick();
-  renderSignUpClick();
+  onLoginClick();
+  onSignUpClick();
   logoClick();
 })
