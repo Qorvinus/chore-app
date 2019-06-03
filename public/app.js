@@ -14,7 +14,7 @@ function renderLoginPage() {
 
 function generateLoginPage() {
   return `
-    <section role="section" class="login-container" id="js-login-conatiner">
+    <section role="section" class="login-container col-8" id="js-login-conatiner">
       <form id="js-login" class="login">
         <span class="username">User Name:<input id="js-username" type="text" name="username" autofocus></span>
         <span class="password">Password:<input id="js-password" type="password" name="password"></span>
@@ -75,6 +75,7 @@ function setNav() {
   $('.login-nav').addClass('hidden');
   $('.dashboard-nav').removeClass('hidden');
   $('h1').addClass('hidden');
+  $('#logo').addClass('hidden');
 }
 
 function renderHome() {
@@ -86,14 +87,14 @@ function renderHome() {
 
 function generateRenderHome() {
   return `
-    <section role="section" id="js-dashboard-container" class="dashboard-container">
+    <section role="section" id="js-dashboard-container" class="dashboard-container col-8">
     <p>On the home page you can select a client and choose to either log new chores to them or pay out an allowance.</p>
       <p>Clients:</p>
       <form>
         <fieldset>
           <ul id="js-render-clients-home"></ul>
-          <input type="button" value="Log Chore" id="js-log-chore-page-button" class="hover">
-          <input type="button" value="Pay Allowance" id="js-pay-allowance-page-button" class="hover">
+          <input type="button" value="Log Chore" id="js-log-chore-page-button" class="hover button">
+          <input type="button" value="Pay Allowance" id="js-pay-allowance-page-button" class="hover button">
         </fieldset>
       </form>
       <p class="js-error-message"></p>
@@ -180,7 +181,7 @@ function renderLogChorePage(data) {
 
 function generateLogChorePage(data) {
   return `
-    <section role="section" id="js-log-chore-container" class="log-chore-container">
+    <section role="section" id="js-log-chore-container" class="log-chore-container col-8">
       <p>Please select a chore to log for the selected client.</p>
       <p>Adding a new chore log to ${data.name}.</p>
       <form>
@@ -189,7 +190,7 @@ function generateLogChorePage(data) {
             <select name="select-chore" id="js-chore-select" class="drop-down" required>
             <option value="selectChore" selected>Select Chore</option>
             </select>
-            <input type="submit" value="Log Chore" id="js-log-chore-button" class="log-chore-button hover">
+            <input type="submit" value="Log Chore" id="js-log-chore-button" class="log-chore-button hover button">
           </fieldset>
       </form>
       <p class="js-error-message"></p>
@@ -253,13 +254,22 @@ function addTotalValue(client_id, newTotal) {
 function logAnotherChore(data) {
   $('#js-log-chore-container').html(generateLogAnotherChore(data));
     onLogAnotherClick(data);
+    onSwitchClient();
 }
 
 function generateLogAnotherChore(data) {
   return `
     <p>${data.name} now has a total allowance of: $${data.totalValue}</p>
-    <input type="submit" value="Log another chore?" id="js-log-another-button" class="hover">
+    <input type="button" value="Log another chore?" id="js-log-another-button" class="hover button">
+    <input type="button" value="Switch client?" id="js-switch-client-button" class="hover button">
     `
+}
+
+function onSwitchClient() {
+  $('#js-switch-client-button').on('click', function(event) {
+    event.preventDefault();
+    renderHome();
+  });
 }
 
 function onLogAnotherClick(data) {
@@ -303,43 +313,44 @@ function getClientInfo(client_id, callback) {
 function renderPayPage(data) {
   const client_id = data.id;
   const totalValue = data.totalValue;
+  const name = data.name;
   $('#js-main-container').html(generateRenderPayPage(data));
-    onPayAllowanceClick(client_id, totalValue);
+    onPayAllowanceClick(client_id, totalValue, name);
 }
 
 function generateRenderPayPage(data) {
   return `
-    <section role="section" id="js-pay-allowance-container" class="pay-allowance-container">
+    <section role="section" id="js-pay-allowance-container" class="pay-allowance-container col-8">
       <p>Please enter an amount of equal or lesser value to pay out to the selected client.</p>
       <p>Pay out allowance to ${data.name}.  Current total allowance available is $${data.totalValue}.</p>
       <form>
         <label for="allowance">Enter amount to payout:</label>
           <input type="number" value="0" id="js-pay-allowance-text" autofocus required>
-          <input type="submit" value="Pay Allowance" id="js-pay-allowance-button" class="pay-allowance-button hover">
+          <input type="submit" value="Pay Allowance" id="js-pay-allowance-button" class="pay-allowance-button hover button">
       </form>
       <p class="js-error-message"></p>
     </section>
     `
 }
 
-function onPayAllowanceClick(client_id, totalValue) {
+function onPayAllowanceClick(client_id, totalValue, name) {
   $('#js-pay-allowance-button').on('click', function(event) {
     event.preventDefault();
     const value = $('#js-pay-allowance-text').val();
-    checkPayAmount(value, client_id, totalValue);
+    checkPayAmount(value, client_id, totalValue, name);
   });
 }
 
-function checkPayAmount(value, client_id, totalValue) {
+function checkPayAmount(value, client_id, totalValue, name) {
   if (value.length == 0 || value > totalValue) {
     $('.js-error-message').text('Amount of allowance paid cannot be empty or cannot be more than the total Allowance.');
   } else {
     const newTotal = parseFloat(totalValue).toFixed(2) - parseFloat(value).toFixed(2);
-    subtractClientTotal(client_id, newTotal);
+    subtractClientTotal(client_id, newTotal, value, name);
   };
 }
 
-function subtractClientTotal(client_id, newTotal) {
+function subtractClientTotal(client_id, newTotal, value, name) {
   const url = `http://localhost:8080/api/users/client/value/${client_id}`;
   const data = {
     id: `${client_id}`,
@@ -354,10 +365,21 @@ function subtractClientTotal(client_id, newTotal) {
       'Content-Type': 'application/json'
     }
   })
-  .then(renderHome())
+  .then(renderAfterPay(value, name))
   .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
     });
+}
+
+function renderAfterPay(value, name) {
+  const amount = parseFloat(`${value}`).toFixed(2);
+  $('#js-main-container').html(generateAfterPay(amount, name));
+}
+
+function generateAfterPay(amount, name) {
+  return `
+    <p>You have paid out $${amount} to ${name}.  Don't forget to pay them!</p>
+  `
 }
 
 function onEditClientClick() {
@@ -375,13 +397,13 @@ function renderEditClient() {
 
 function generateRenderEditClient() {
   return `
-    <section role="section" class="edit-client-container" id="js-edit-client-container">
+    <section role="section" class="edit-client-container col-8" id="js-edit-client-container">
       <p>Select a client to either edit or delete.</p>
       <div>Clients:</div>
       <form>
         <fieldset>
           <ul id="js-render-clients-list"></ul>
-          <input type="button" value="Edit" class="js-client-edit-button hover">
+          <input type="button" value="Edit" class="js-client-edit-button hover button">
           <input type="button" value="Delete" class="js-client-delete-button hover">
         </fieldset>
       </form>
@@ -433,13 +455,13 @@ function renderEditClientPage(data) {
 
 function generateRenderEditClientPage(data) {
   return `
-    <section role="section" id="js-edit-client-container" class="edit-client-container">
+    <section role="section" id="js-edit-client-container" class="edit-client-container col-8">
       <p>Enter the clients updated name.</p>
       <p>Currently editing client: ${data.name}.</p>
       <form id="js-edit-client-name">
         <span>Edit name of client</span>
         <input type="text" value="${data.name}" id="js-edit-client-text" autofocus>
-        <input type="submit" value="Submit" id="js-edit-client-submit" class="hover">
+        <input type="submit" value="Submit" id="js-edit-client-submit" class="hover button">
       </form>
       <p class="js-error-message"></p>
     </section>
@@ -528,12 +550,14 @@ function renderAddClient() {
 
 function generateRenderAddClient() {
   return `
-    <section role="section" id="js-add-client-container" class="add-client-container">
+    <section role="section" id="js-add-client-container" class="add-client-container col-8">
       <p>Enter the name of your new client.</p>
       <form id="js-add-client-form">
+      <fieldset>
         <span>Name:</span>
         <input type="text" id="js-add-client-text" autofocus>
-        <input type="submit" value="add" id="js-add-client-button" class="hover">
+        <input type="submit" value="Add" id="js-add-client-button" class="hover button">
+      </fieldset>
       </form>
       <p class="js-error-message"></p>
     </section>
@@ -589,7 +613,7 @@ function renderNewClient(response) {
 
 function generateRenderNewClient(response) {
   return `
-    <p>${response.name} has been successfully created!</p><input type="submit" id="js-add-another-client-button" value="Add another?" class="hover">
+    <p>${response.name} has been successfully created!</p><input type="submit" id="js-add-another-client-button" value="Add another?" class="hover button">
     <p class="js-error-message"></p>
     `
 }
@@ -615,14 +639,16 @@ function renderAddChore() {
 
 function generateRenderAddChore() {
   return `
-    <section role="section" id="js-add-chore-container" class="add-chore-container">
+    <section role="section" id="js-add-chore-container" class="add-chore-container col-8">
       <p>Enter the name of the new chore as well as the respective value for the chore.</p>
       <form id="js-add-chore-form">
+      <fieldset>
         <span>Name of chore:</span>
         <input type="text" id="js-add-chore-text" autofocus>
         <span>Value of chore:</span>
         <input type="number" id="js-add-chore-value-number">
-        <input type="submit" value="add" id="js-add-chore-button" class="hover">
+        <input type="submit" value="Add" id="js-add-chore-button" class="hover button">
+        </fieldset>
       </form>
       <p class="js-error-message"></p>
     </section>
@@ -685,7 +711,7 @@ function renderNewChore(response) {
 
 function generateRenderNewChore(response) {
   return `
-    <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="submit" id="js-add-another-chore-button" value="Add another?" class="hover">
+    <p>${response.choreName} has been successfully created, with a value of $${response.value}!</p><input type="submit" id="js-add-another-chore-button" value="Add another?" class="hover button">
     <p class="js-error-message"></p>
     `
 }
@@ -712,13 +738,13 @@ function renderEditChore() {
 
 function generateRenderEditChore() {
   return `
-    <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container">
+    <section role="section" id="js-edit-chore-list-container" class="edit-chore-list-container col-8">
       <p>Select a chore that you wish to edit or delete.</p>
       <div>List of chores:</div>
       <form>
         <fieldset>
           <ul id="js-render-chore-list"></ul>
-          <input type="button" value="Edit" class="js-chore-edit-button hover">
+          <input type="button" value="Edit" class="js-chore-edit-button hover button">
           <input type="button" value="Delete" class="js-chore-delete-button hover">
         </fieldset>
       </form>
@@ -792,7 +818,7 @@ function renderEditChorePage(data) {
 
 function generateEditChorePage(data) {
   return `
-    <section role="section" id="js-edit-chore-container" class="edit-chore-container">
+    <section role="section" id="js-edit-chore-container" class="edit-chore-container col-8">
       <p>Here you can update the name of the chore as well as how much the chore's value.</p>
       <p>Currently editing ${data.choreName}.</p>
       <form id="js-edit-chore-prop">
@@ -800,7 +826,7 @@ function generateEditChorePage(data) {
         <input type="text" value="${data.choreName}" id="js-edit-chore-text" autofocus>
         <span>Edit value of chore</span>
         <input type="number" value="${data.value}" id="js-edit-chore-value-number">
-        <input type="submit" value="Submit" id="js-edit-chore-submit" class="hover">
+        <input type="submit" value="Submit" id="js-edit-chore-submit" class="hover button">
       </form>
       <p class="js-error-message"></p>
     </section>
@@ -885,8 +911,8 @@ function logoClick() {
 
 function renderSignUp() {
   $('#js-main-container').html(`
-    <section role="section" class="signup-container" id="js-signup-container">
-      <form id="js-signup-form">
+    <section role="section" class="signup-container col-8" id="js-signup-container">
+      <form id="js-signup-form" class="signup-form">
         <fieldset>
           <span class="block">First Name:</span>
           <input type="text" id="js-firstname-signup" autofocus>
@@ -896,7 +922,7 @@ function renderSignUp() {
           <input type="text" id="js-username-signup">
           <span class="block">Password:</span>
           <input type="password" id="js-password-signup">
-          <input id="js-signup-button" type="submit" value="Sign-Up!"  class="hover">
+          <input id="js-signup-button" type="submit" value="Sign-Up!"  class="hover button">
         </fieldset>
       </form>
       <p class="js-error-message"></p>
@@ -955,8 +981,18 @@ function signUp(firstName, lastName, username, password) {
   .catch(err => console.error('Error', err));
 }
 
+function onDemoClick() {
+  $('#js-demo-button').on('click', function(event) {
+    event.preventDefault();
+      const username = 'demo';
+      const password = 'password';
+    userLogin(username, password);
+  })
+}
+
 $(function() {
   onLoginClick();
   onSignUpClick();
+  onDemoClick();
   logoClick();
 })
