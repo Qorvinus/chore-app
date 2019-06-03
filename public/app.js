@@ -126,6 +126,46 @@ function getUserInfo(callback) {
 
 function renderHomeClients(data) {
     const client = data.client;
+    if (client.length == 0) {
+      renderStartPage();
+    } else {
+      generateRenderHomeclients(data);
+    }
+}
+
+function renderStartPage() {
+  $('#js-main-container').html(generateStartPage());
+}
+
+function generateStartPage() {
+  return `
+  <section role="section" id="js-start-container" class="start-container col-8">
+  <p>Welcome to the chore-app!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Clients", "Edit Chores" and "Logout".  </p>
+        <ul id="js-instructions">
+          <li>
+            <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.
+          </li>
+          <li>
+            <span class="bold">Add Clients:</span> This is where you can add new clients.
+          </li>
+          <li>
+            <span class="bold">Add Chores:</span> Here you can add chores and give them their respective dollar value.
+          </li>
+          <li>
+            <span class="bold">Edit Clients:</span> If you misspelled one of your clients' names you can edit it here without worry of losing their data.
+          </li>
+          <li>
+            <span class="bold">Edit Chores:</span> You can edit the chore name and the value.
+          </li>
+        </ul>
+        <p>We recommend you start off by adding clients then chores, we hope you enjoy our Chore-App and find it useful.</p>
+    <p class="js-error-message"></p>
+  </section>
+  `
+}
+
+function generateRenderHomeclients(data) {
+    const client = data.client;
     const chore = data.chore;
     for (let i = 0; i < client.length; i++) {
       let totalValue = parseFloat(`${client[i].totalValue}`).toFixed(2);
