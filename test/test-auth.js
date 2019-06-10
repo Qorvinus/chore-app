@@ -196,41 +196,25 @@ describe('Auth endpoints', function() {
         });
     });
     it('Should return a valid auth token with a newer expiry date', function(done) {
-      // chai.request(app)
-      //   .post('/api/users/signup')
-      //   .send(signUpInfo)
-      //   .end((err, res) => {
-      //     res.should.have.status(201);
-      //     chai.request(app)
-      //       .post('/api/auth/login')
-      //       .send(loginInfo)
-      //       .end((err, res) => {
-      //         res.should.have.status(200);
-      //         res.body.should.have.property('authToken');
-      //
-      //         let oldToken = res.body.authToken;
-      const token = jwt.sign(
-        {
-          user: {
-            username,
-            firstName,
-            lastName
-          }
-        },
-        JWT_SECRET,
-        {
-          algorithm: 'HS256',
-          subject: username,
-          expiresIn: '7d'
-        }
-      );
+      chai.request(app)
+        .post('/api/users/signup')
+        .send(signUpInfo)
+        .end((err, res) => {
+          res.should.have.status(201);
+          chai.request(app)
+            .post('/api/auth/login')
+            .send(loginInfo)
+            .end((err, res) => {
+              res.should.have.status(200);
+              res.body.should.have.property('authToken');
+
+              let oldToken = res.body.authToken;
 
       return chai
         .request(app)
         .post('/api/auth/refresh')
-        .set('Authorization', `Bearer ${token}`)
-        .end((res) => {
-          console.log(res);
+        .set('Authorization', `Bearer ${oldToken}`)
+        .end((err, res) => {
             res.should.have.status(200);
             expect(res).to.be.an('object');
             const newToken = res.body.authToken;
@@ -240,5 +224,5 @@ describe('Auth endpoints', function() {
         });
       });
     });
-//   });
-// });
+  });
+});

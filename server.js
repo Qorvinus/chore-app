@@ -53,7 +53,6 @@ app.use('*', (req, res) => {
   return res.status(404).json({ message: 'Not Found' });
 })
 
-//add runServer & closeServer functions and export
 let server;
 
 function runServer(databaseUrl, port = PORT) {

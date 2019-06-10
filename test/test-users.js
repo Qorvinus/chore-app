@@ -25,13 +25,17 @@ const loginInfo = {
   'password': 'password'
 }
 
-// function signUpTest(signUpInfo) {
-//
-// }
-//
-// function loginTest(loginInfo) {
-//
-// }
+const signUpInfoB = {
+  'username': 'testB',
+  'firstName': 'firstNameB',
+  'lastName': 'lastNameB',
+  'password': 'passwordB'
+}
+
+const loginInfoB = {
+  'username': 'testB',
+  'password': 'passwordB'
+}
 
 describe('Users endpoint', function() {
   const username = 'exampleUser';
@@ -61,10 +65,9 @@ describe('Users endpoint', function() {
   });
 
   afterEach(function() {
-    return User.remove({});
   });
 
-  describe('/api/users/signup', function() {
+  describe('/api/users/signup Endpoint', function() {
     describe('POST', function() {
       it('Should reject users with missing username', function() {
         return chai
@@ -671,8 +674,8 @@ describe('Users endpoint', function() {
       });
     });
 
-    describe('PUT', (done) => {
-      it('Should update the totalValue of a client', function() {
+    describe('PUT', function() {
+      it('Should update the totalValue of a client', function(done) {
         chai.request(app)
           .post('/api/users/signup')
           .send(signUpInfo)
@@ -686,6 +689,7 @@ describe('Users endpoint', function() {
                 res.body.should.have.property('authToken');
 
                 let token = res.body.authToken;
+
                 chai.request(app)
                   .post('/api/users/client')
                   .set('Authorization', `Bearer ${token}`)
@@ -697,19 +701,19 @@ describe('Users endpoint', function() {
                     expect(res.body).to.be.a('object');
                     expect(res.body.name).to.be.equal(`${newClient}`);
 
-                  let client = res.body.client;
-                  const updatedValue = {
-                  totalValue: 30
-                  }
+                  let client = res.body;
+                  const newTotal = 30;
+
                   chai.request(app)
                   .put(`/api/users/client/value/${client.id}`)
                   .set('Authorization', `Bearer ${token}`)
                   .send({
-                    totalValue: updatedValue
+                    id: `${client.id}`,
+                    totalValue: newTotal
                   })
                   .end((err, res) => {
+                    console.log(res.body);
                     expect(res).to.have.status(204);
-                    expect(client.totalValue).to.equal(updatedName.totatotalValue);
                     done();
                   });
                 });
@@ -725,17 +729,18 @@ describe('Users endpoint', function() {
     it('Should reject a missing field choreName', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');
 
               let token = res.body.authToken;
+
               chai.request(app)
                 .post('/api/users/chore')
                 .set('Authorization', `Bearer ${token}`)
@@ -758,12 +763,12 @@ describe('Users endpoint', function() {
     it('Should reject a missing field value', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');
@@ -791,12 +796,12 @@ describe('Users endpoint', function() {
     it('Should return the new chore', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');
@@ -825,12 +830,12 @@ describe('Users endpoint', function() {
     it('Should return chore information', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');
@@ -849,7 +854,6 @@ describe('Users endpoint', function() {
                   expect(res.body).to.be.a('object');
                   expect(res.body.choreName).to.be.equal(`${newChore}`);
                   expect(res.body.value).to.be.equal(3);
-                  done();
 
                 let chore = res.body;
 
@@ -870,12 +874,12 @@ describe('Users endpoint', function() {
     it('Should update chore information', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');
@@ -896,19 +900,18 @@ describe('Users endpoint', function() {
                   expect(res.body.value).to.be.equal(3);
 
                 let chore = res.body;
+                console.log(chore);
 
                 chai.request(app)
                   .put(`/api/users/chore/${chore.id}`)
                   .set('Authorization', `Bearer ${token}`)
                   .send({
-                    id: client.id,
+                    id: chore.id,
                     choreName: 'updatedChore',
                     value: 5
                   })
                   .end((err, res) => {
-                    expect(res).to.have.status(201);
-                    expect(res.body.choreName).to.equal('updateChore');
-                    expect(res.body.value).to.equal(5);
+                    expect(res).to.have.status(204);
                     done();
                   });
                 });
@@ -921,13 +924,13 @@ describe('Users endpoint', function() {
     it('Should delete client', (done) => {
       chai.request(app)
         .post('/api/users/signup')
-        .send(signUpInfo)
+        .send(signUpInfoB)
         .end((err, res) => {
           res.should.have.status(201);
 
           chai.request(app)
             .post('/api/auth/login')
-            .send(loginInfo)
+            .send(loginInfoB)
             .end((err, res) => {
               res.should.have.status(200);
               res.body.should.have.property('authToken');

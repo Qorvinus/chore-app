@@ -137,7 +137,7 @@ router.post('/client', jwtAuth, (req, res) => {
   }
 
   User
-    .findById(req.user)
+    .findById(req.user._id)
     .then(user => {
       if (user) {
         Client
@@ -204,7 +204,7 @@ router.put('/client/:id', jwtAuth, (req, res) => {
 
 router.delete('/client/:id', jwtAuth, (req, res) => {
   User
-    .findById(req.user)
+    .findById(req.user._id)
     .then(user => {
       if (user) {
         Client
@@ -218,7 +218,7 @@ router.delete('/client/:id', jwtAuth, (req, res) => {
 
 router.get('/user', jwtAuth, (req, res) => {
   User
-    .findById(req.user)
+    .findById(req.user._id)
     .populate('client')
     .populate('chore')
     .exec((err, user) => {
@@ -245,7 +245,7 @@ router.post('/chore', jwtAuth, (req, res) => {
   }
 
   User
-    .findById(req.user)
+    .findById(req.user._id)
     .then(user => {
       if (user) {
         Chore
@@ -312,7 +312,7 @@ router.put('/chore/:id', jwtAuth, (req, res) => {
 
 router.delete('/chore/:id', jwtAuth, (req, res) => {
   User
-    .findById(req.user)
+    .findById(req.user._id)
     .then(user => {
       if (user) {
         Chore
