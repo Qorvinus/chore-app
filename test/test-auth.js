@@ -229,10 +229,6 @@ describe('Auth endpoints', function() {
         .request(app)
         .post('/api/auth/refresh')
         .set('Authorization', `Bearer ${token}`)
-        .send({
-          username: username,
-          password: password
-        })
         .end((res) => {
           console.log(res);
             res.should.have.status(200);
