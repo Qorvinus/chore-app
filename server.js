@@ -44,13 +44,6 @@ app.use('/api/auth', authRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
-app.get('/api/protected', jwtAuth, (req, res) => {
-  return res.json({
-    //check rosebud
-    data: 'rosebud'
-  });
-})
-
 app.get('/logout', (req, res) => {
   req.logout();
   res.redirect('/');

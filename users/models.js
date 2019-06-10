@@ -82,4 +82,4 @@ const User = mongoose.model("User", UserSchema)
 
 // const ClientChore = mongoose.model("ClientChore", ClientChoreSchema);
 
-module.exports = { Client, Chore, User };
+module.exports = { User, Chore, Client };
