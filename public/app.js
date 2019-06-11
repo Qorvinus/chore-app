@@ -143,7 +143,7 @@ function generateStartPage() {
   <p>Welcome to the chore-app!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Clients", "Edit Chores" and "Logout".  </p>
         <ul id="js-instructions">
           <li>
-            <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.
+            <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.  Once you're set up this is where you'll spend most of your time, logging chores and paying out allowances.
           </li>
           <li>
             <span class="bold">Add Clients:</span> This is where you can add new clients.
@@ -418,7 +418,9 @@ function renderAfterPay(value, name) {
 
 function generateAfterPay(amount, name) {
   return `
-    <p>You have paid out $${amount} to ${name}.  Don't forget to pay them!</p>
+    <section role="section" id="js-paid-container" class="paid-container col-8">
+      <p>You have paid out $${amount} to ${name}.  Don't forget to pay them!</p>
+    </section>
   `
 }
 
@@ -1026,8 +1028,78 @@ function onDemoClick() {
     event.preventDefault();
       const username = 'demo';
       const password = 'password';
-    userLogin(username, password);
+    demoLogin(username, password);
   })
+}
+
+function demoLogin(username, password) {
+  const data = {
+    username: username,
+    password: password
+  };
+
+  const url = 'http://localhost:8080/api/auth/login';
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    throw new Error(res.statusText);
+  })
+  .then(response => {
+    localStorage.setItem('authToken', response.authToken);
+    renderDemoWelcome();
+    //prepareDashboard();
+  })
+  .catch(err => console.error('Error', err));
+}
+
+function renderDemoWelcome() {
+  $('#js-main-container').html(generateDemoWelcome());
+  setNav();
+  onGotItClick();
+}
+
+function generateDemoWelcome() {
+  return `
+  <section role="section" id="js-demo-welcome-container" class="demo-welcome-container col-8">
+  <p>Welcome to the chore-app!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Clients", "Edit Chores" and "Logout".  </p>
+        <ul id="js-instructions">
+          <li>
+            <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.  Once you're set up this is where you'll spend most of your time, logging chores and paying out allowances.
+          </li>
+          <li>
+            <span class="bold">Add Clients:</span> This is where you can add new clients.
+          </li>
+          <li>
+            <span class="bold">Add Chores:</span> Here you can add chores and give them their respective dollar value.
+          </li>
+          <li>
+            <span class="bold">Edit Clients:</span> If you misspelled one of your clients' names you can edit it here without worry of losing their data.
+          </li>
+          <li>
+            <span class="bold">Edit Chores:</span> You can edit the chore name and the value.
+          </li>
+        </ul>
+        <div class="center">
+        <button type="button" id="js-ok-button" class="hover button">Ok, got it!</button>
+        </div>
+    <p class="js-error-message"></p>
+  </section>
+  `
+}
+
+function onGotItClick() {
+  $('#js-ok-button').on('click', function(event) {
+    event.preventDefault();
+    prepareDashboard();
+  });
 }
 
 $(function() {

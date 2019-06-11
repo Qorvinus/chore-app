@@ -131,6 +131,10 @@ input[type=button], input[type=submit] {
   font-weight: bold;
 }
 
+.center {
+  text-align: center;
+}
+
 .button:hover {
   background: #6EFFA5;
 }
