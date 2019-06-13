@@ -15,11 +15,14 @@ function renderLoginPage() {
 function generateLoginPage() {
   return `
     <section role="section" class="login-container col-8" id="js-login-conatiner">
+    <div class="login-center">
       <form id="js-login" class="login">
-        <span class="username">User Name:<input id="js-username" type="text" name="username" autofocus></span>
-        <span class="password">Password:<input id="js-password" type="password" name="password"></span>
+        <span class="username">User Name:<input id="js-username" type="text" name="username" class="center-input" autofocus></span>
+        <span class="password">Password:<input id="js-password" type="password" name="password" class="center-input"></span>
         <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
       </form>
+    </div>
+    <p class="js-error-message"></p>
     </section>
     `
 }
@@ -954,19 +957,21 @@ function logoClick() {
 function renderSignUp() {
   $('#js-main-container').html(`
     <section role="section" class="signup-container col-8" id="js-signup-container">
+    <div class="signup-center">
       <form id="js-signup-form" class="signup-form">
         <fieldset>
           <span class="block">First Name:</span>
-          <input type="text" id="js-firstname-signup" autofocus>
+          <input type="text" id="js-firstname-signup" class="center-input" autofocus>
           <span class="block">Last Name:</span>
-          <input type="text" id="js-lastname-signup">
+          <input type="text" id="js-lastname-signup" class="center-input">
           <span class="block">User Name:</span>
-          <input type="text" id="js-username-signup">
+          <input type="text" id="js-username-signup" class="center-input">
           <span class="block">Password:</span>
-          <input type="password" id="js-password-signup">
+          <input type="password" id="js-password-signup" class="center-input">
           <input id="js-signup-button" type="submit" value="Sign-Up!"  class="hover button">
         </fieldset>
       </form>
+    </div>
       <p class="js-error-message"></p>
     </section>
     `);
