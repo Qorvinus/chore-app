@@ -1,7 +1,6 @@
 'use strict';
 
-require('dotenv').config();
-const { API_BASE_URL } = require('./config')
+const apiUrl = 'https://protected-eyrie-51452.herokuapp.com'
 
 function onLoginClick() {
   $('#js-go-login-button').on('click', function(event) {
@@ -46,7 +45,7 @@ function userLogin(username, password) {
     password: password
   };
 
-  const url = API_BASE_URL + '/api/auth/login';
+  const url = apiUrl + '/api/auth/login';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -109,7 +108,7 @@ function generateRenderHome() {
 }
 
 function getUserInfo(callback) {
-  const url = API_BASE_URL + '/api/users/user';
+  const url = apiUrl + '/api/users/user';
 
   fetch(url, {
     method: 'GET',
@@ -196,7 +195,7 @@ function onLogChorePageClick(client_id) {
 }
 
 function getClientInfo(client_id, callback) {
-  const url = API_BASE_URL + `/api/users/client/${client_id}`;
+  const url = apiUrl + `/api/users/client/${client_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -271,7 +270,7 @@ function submitLogChore(client_id, totalValue) {
 }
 
 function addTotalValue(client_id, newTotal) {
-  const url = API_BASE_URL + `/api/users/client/value/${client_id}`;
+  const url = apiUrl + `/api/users/client/value/${client_id}`;
   const data = {
     id: client_id,
     totalValue: newTotal
@@ -335,7 +334,7 @@ function onPayPageClick() {
 }
 
 function getClientInfo(client_id, callback) {
-  const url = API_BASE_URL + `/api/users/client/${client_id}`;
+  const url = apiUrl + `/api/users/client/${client_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -397,7 +396,7 @@ function checkPayAmount(value, client_id, totalValue, name) {
 }
 
 function subtractClientTotal(client_id, newTotal, value, name) {
-  const url = API_BASE_URL + `/api/users/client/value/${client_id}`;
+  const url = apiUrl + `/api/users/client/value/${client_id}`;
   const data = {
     id: `${client_id}`,
     totalValue: `${newTotal}`
@@ -530,7 +529,7 @@ function editClientSubmit(client_id) {
 }
 
 function updateClient(client_id, editName) {
-  const url = API_BASE_URL + `/api/users/client/${client_id}`;
+  const url = apiUrl + `/api/users/client/${client_id}`;
   const data = {
     id: client_id,
     name: editName
@@ -626,7 +625,7 @@ function addClientClick() {
 }
 
 function addClient(newName) {
-  const url = API_BASE_URL + '/api/users/client';
+  const url = apiUrl + '/api/users/client';
   const data = {
     name: newName
   }
@@ -718,7 +717,7 @@ function addChoreClick() {
 }
 
 function addChore(newChore, newValue) {
-  const url = API_BASE_URL + '/api/users/chore';
+  const url = apiUrl + '/api/users/chore';
   const data = {
       choreName: newChore,
       value: newValue
@@ -837,7 +836,7 @@ function onEditChorePageClick(chore_id) {
 }
 
 function getChoreInfo(chore_id, callback) {
-  const url = API_BASE_URL + `/api/users/chore/${chore_id}`;
+  const url = apiUrl + `/api/users/chore/${chore_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -896,7 +895,7 @@ function editChoreClick(chore_id) {
 }
 
 function editChore(chore_id, updatedChore, updatedValue) {
-  const url = API_BASE_URL + `/api/users/chore/${chore_id}`;
+  const url = apiUrl + `/api/users/chore/${chore_id}`;
   const data = {
     id: chore_id,
     choreName: updatedChore,
@@ -1013,7 +1012,7 @@ function signUp(firstName, lastName, username, password) {
     password: password
 
   }
-  const url = API_BASE_URL + '/api/users/signup';
+  const url = apiUrl + '/api/users/signup';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -1046,7 +1045,7 @@ function demoLogin(username, password) {
     password: password
   };
 
-  const url = API_BASE_URL + '/api/auth/login';
+  const url = apiUrl + '/api/auth/login';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
