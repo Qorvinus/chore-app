@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const { API_BASE_URL } = require('./config')
 
 function onLoginClick() {
