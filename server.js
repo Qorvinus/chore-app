@@ -1,8 +1,5 @@
 'use strict';
 
-// ES6 ?
-// import express from 'express';
-// import morgan from 'morgan';
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');

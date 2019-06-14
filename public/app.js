@@ -1,5 +1,7 @@
 'use strict';
 
+const { API_BASE_URL } = require('./config')
+
 function onLoginClick() {
   $('#js-go-login-button').on('click', function(event) {
     event.preventDefault();
@@ -43,7 +45,7 @@ function userLogin(username, password) {
     password: password
   };
 
-  const url = 'http://localhost:8080/api/auth/login';
+  const url = API_BASE_URL + '/api/auth/login';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -106,7 +108,7 @@ function generateRenderHome() {
 }
 
 function getUserInfo(callback) {
-  const url = 'http://localhost:8080/api/users/user';
+  const url = API_BASE_URL + '/api/users/user';
 
   fetch(url, {
     method: 'GET',
@@ -193,7 +195,7 @@ function onLogChorePageClick(client_id) {
 }
 
 function getClientInfo(client_id, callback) {
-  const url = `http://localhost:8080/api/users/client/${client_id}`;
+  const url = API_BASE_URL + `/api/users/client/${client_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -268,7 +270,7 @@ function submitLogChore(client_id, totalValue) {
 }
 
 function addTotalValue(client_id, newTotal) {
-  const url = `http://localhost:8080/api/users/client/value/${client_id}`;
+  const url = API_BASE_URL + `/api/users/client/value/${client_id}`;
   const data = {
     id: client_id,
     totalValue: newTotal
@@ -332,7 +334,7 @@ function onPayPageClick() {
 }
 
 function getClientInfo(client_id, callback) {
-  const url = `http://localhost:8080/api/users/client/${client_id}`;
+  const url = API_BASE_URL + `/api/users/client/${client_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -394,7 +396,7 @@ function checkPayAmount(value, client_id, totalValue, name) {
 }
 
 function subtractClientTotal(client_id, newTotal, value, name) {
-  const url = `http://localhost:8080/api/users/client/value/${client_id}`;
+  const url = API_BASE_URL + `/api/users/client/value/${client_id}`;
   const data = {
     id: `${client_id}`,
     totalValue: `${newTotal}`
@@ -527,7 +529,7 @@ function editClientSubmit(client_id) {
 }
 
 function updateClient(client_id, editName) {
-  const url = `http://localhost:8080/api/users/client/${client_id}`;
+  const url = API_BASE_URL + `/api/users/client/${client_id}`;
   const data = {
     id: client_id,
     name: editName
@@ -623,7 +625,7 @@ function addClientClick() {
 }
 
 function addClient(newName) {
-  const url = 'http://localhost:8080/api/users/client';
+  const url = API_BASE_URL + '/api/users/client';
   const data = {
     name: newName
   }
@@ -715,7 +717,7 @@ function addChoreClick() {
 }
 
 function addChore(newChore, newValue) {
-  const url = 'http://localhost:8080/api/users/chore';
+  const url = API_BASE_URL + '/api/users/chore';
   const data = {
       choreName: newChore,
       value: newValue
@@ -834,7 +836,7 @@ function onEditChorePageClick(chore_id) {
 }
 
 function getChoreInfo(chore_id, callback) {
-  const url = `http://localhost:8080/api/users/chore/${chore_id}`;
+  const url = API_BASE_URL + `/api/users/chore/${chore_id}`;
 
   fetch(url, {
     method: 'GET',
@@ -893,7 +895,7 @@ function editChoreClick(chore_id) {
 }
 
 function editChore(chore_id, updatedChore, updatedValue) {
-  const url = `http://localhost:8080/api/users/chore/${chore_id}`;
+  const url = API_BASE_URL + `/api/users/chore/${chore_id}`;
   const data = {
     id: chore_id,
     choreName: updatedChore,
@@ -1010,7 +1012,7 @@ function signUp(firstName, lastName, username, password) {
     password: password
 
   }
-  const url = 'http://localhost:8080/api/users/signup';
+  const url = API_BASE_URL + '/api/users/signup';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -1043,7 +1045,7 @@ function demoLogin(username, password) {
     password: password
   };
 
-  const url = 'http://localhost:8080/api/auth/login';
+  const url = API_BASE_URL + '/api/auth/login';
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
