@@ -217,6 +217,7 @@ function getClientInfo(client_id, callback) {
 }
 
 function renderLogChorePage(data) {
+  console.log(data);
   const client_id = data.id;
   const totalValue = data.totalValue;
   $('#js-main-container').html(generateLogChorePage(data))
@@ -259,6 +260,7 @@ function submitLogChore(client_id, totalValue) {
     event.preventDefault();
     const select = document.getElementById('js-chore-select');
     let value = select.options[select.selectedIndex].value;
+    console.log(value);
 
     if (value === 'selectChore') {
       $('.js-error-message').text('Please select a chore.');
