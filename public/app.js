@@ -1064,7 +1064,6 @@ function demoLogin(username, password) {
   .then(response => {
     localStorage.setItem('authToken', response.authToken);
     renderDemoWelcome();
-    //prepareDashboard();
   })
   .catch(err => console.error('Error', err));
 }

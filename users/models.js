@@ -36,8 +36,6 @@ const UserSchema = mongoose.Schema({
   chore: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chore'}]
 });
 
-// [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clients' }]
-
 ChoreSchema.methods.serialize = function() {
   return {
     id: this._id,
@@ -79,7 +77,5 @@ const Client = mongoose.model("Client", ClientSchema);
 const Chore = mongoose.model("Chore", ChoreSchema);
 
 const User = mongoose.model("User", UserSchema)
-
-// const ClientChore = mongoose.model("ClientChore", ClientChoreSchema);
 
 module.exports = { User, Chore, Client };

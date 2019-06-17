@@ -347,11 +347,4 @@ router.put('/client/value/:id', jwtAuth, (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error ' }));
 })
 
-//remove me later after testing complete
-router.get('/users', (req, res) => {
-  return User.find()
-    .then(users => res.json(users.map(user => user.serialize())))
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
-})
-
 module.exports = { router };
