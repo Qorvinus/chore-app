@@ -63,7 +63,11 @@ function userLogin(username, password) {
     localStorage.setItem('authToken', response.authToken);
     prepareDashboard();
   })
-  .catch(err => console.error('Error', err));
+  .catch(err => renderLoginError(err));
+}
+
+function renderLoginError(err) {
+  $('.js-error-message').text(err.message);
 }
 
 function prepareDashboard() {
@@ -74,6 +78,34 @@ function prepareDashboard() {
   onAddChoreClick();
   onEditChoreClick();
   onEditClientClick();
+  onLogOutClick();
+}
+
+function onLogOutClick() {
+  $('.js-logout').on('click', function(event) {
+    event.preventDefault();
+    localStorage.clear();
+    onLogOut();
+  });
+}
+
+function onLogOut() {
+  const url = apiUrl + '/logout';
+  fetch(url, {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json'
+      }
+  })
+  .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error(res.statusText);
+    })
+  .catch(err => {
+      $('.js-error-message').text(`Something went wrong: ${err.message}`);
+    });
 }
 
 function setNav() {
@@ -260,7 +292,6 @@ function submitLogChore(client_id, totalValue) {
     event.preventDefault();
     const select = document.getElementById('js-chore-select');
     let value = select.options[select.selectedIndex].value;
-    console.log(value);
 
     if (value === 'selectChore') {
       $('.js-error-message').text('Please select a chore.');
@@ -295,6 +326,7 @@ function addTotalValue(client_id, newTotal) {
   .then(getClientInfo(client_id, logAnotherChore))
   .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
+      console.log(err.message);
     });
 }
 
@@ -982,29 +1014,76 @@ function renderSignUp() {
     signUpClick();
 }
 
+// function signUpClick() {
+//   $('#js-signup-button').on('click', function(event) {
+//     event.preventDefault();
+//     const firstName = $('#js-firstname-signup').val();
+//     const lastName = $('#js-lastname-signup').val();
+//     const username = $('#js-username-signup').val();
+//     const password = $('#js-password-signup').val();
+//     const requiredFields = [
+//       firstName, lastName, username, password
+//     ]
+//     if (checkSignUp(firstName, lastName, username, password) === false) {
+//       $('.js-error-message').text('Fields cannot be empty, and password must be at least 8 characters long.')
+//     } else {
+//       signUp(firstName, lastName, username, password);
+//     }
+//   });
+// }
+
 function signUpClick() {
   $('#js-signup-button').on('click', function(event) {
     event.preventDefault();
-    const firstName = $('#js-firstname-signup').val();
-    const lastName = $('#js-lastname-signup').val();
-    const username = $('#js-username-signup').val();
-    const password = $('#js-password-signup').val();
-
-    if (checkSignUp(firstName, lastName, username, password) === false) {
-      $('.js-error-message').text('Fields cannot be empty, and password must be at least 8 characters long.')
-    } else {
-      signUp(firstName, lastName, username, password);
+    const names = {
+      firstName: $('#js-firstname-signup').val(),
+      lastName: $('#js-lastname-signup').val(),
+      username: $('#js-username-signup').val(),
+      password: $('#js-password-signup').val();
     }
-  });
+    if (checkNames(names) === true) {
+      if (checkPass(names.password) === true) {
+        signUp(firstName, lastName, username, password);
+      } else {
+        $('.js-error-message').text('Password must be at least 8 characters long.')
+      };
+    } else {
+      let missing = checkNames(names);
+      $('.js-error-message').text(`${missing} cannot be empty.`)
+    }
+    }
+  })
 }
 
-function checkSignUp(firstName, lastName, username, password) {
-  if (firstName.lenth == 0 || lastName.lenth == 0 || username.lenth == 0 || password.length < 8) {
+function checkNames(names) {
+  let missing = [];
+  Object.keys(names).forEach(function(el) {
+    if (names[el].length == 0) {
+      missing.push(el);
+    }
+  });
+  if (missing.length == 0) {
+    return true;
+  } else {
+    return missing;
+  }
+}
+
+function checkPass(data) {
+  if (data.length < 8) {
     return false;
   } else {
     return true;
-  };
+  }
 }
+
+// function checkSignUp(firstName, lastName, username, password) {
+//   if (firstName.lenth == 0 || lastName.lenth == 0 || username.lenth == 0 || password.length < 8) {
+//     return false;
+//   } else {
+//     return true;
+//   };
+// }
 
 function signUp(firstName, lastName, username, password) {
   const data = {
@@ -1110,9 +1189,16 @@ function onGotItClick() {
   });
 }
 
+function checkForToken() {
+  if !(localStorage.getItem('authToken') === null) {
+    prepareDashboard();
+  };
+}
+
 $(function() {
   onLoginClick();
   onSignUpClick();
   onDemoClick();
   logoClick();
+  checkForToken();
 })

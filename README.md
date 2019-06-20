@@ -1,6 +1,6 @@
 # Welcome to my Chore App!
 
-Check out the Chore-App here: [Chore-App](https://protected-eyrie-51452.herokuapp.com")
+Check out the Chore-App here: [Chore-App](https://protected-eyrie-51452.herokuapp.com)
 
 ## What do I do?
 
