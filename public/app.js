@@ -26,7 +26,7 @@ function generateLoginPage() {
         <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
       </fieldset>
       </form>
-      <p>Don't have an account? <span id="js-no-account"><a href="#">Sign up!</a></span></p>
+      <p>Don't have an account? <span id="js-no-account"><a href="#" class="blue">Sign up!</a></span></p>
     </div>
     <p class="js-error-message"></p>
     </section>
