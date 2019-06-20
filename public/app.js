@@ -595,7 +595,7 @@ function onDeleteClient(client_id) {
 }
 
 function deleteClient(client_id) {
-    const url = `http://localhost:8080/api/users/client/${client_id}`;
+    const url = apiUrl + `/api/users/client/${client_id}`;
 
     fetch(url, {
       method: 'DELETE',
@@ -961,7 +961,7 @@ function checkEditChore(name, value) {
 function deleteChore(chore_id) {
   $('.js-chore-delete-button').on('click', function(event) {
     event.preventDefault();
-    const url = `http://localhost:8080/api/users/chore/${chore_id}`;
+    const url = apiUrl + `/api/users/chore/${chore_id}`;
     fetch(url, {
       method: 'DELETE',
       headers: {
