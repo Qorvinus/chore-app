@@ -1039,7 +1039,7 @@ function signUpClick() {
       firstName: $('#js-firstname-signup').val(),
       lastName: $('#js-lastname-signup').val(),
       username: $('#js-username-signup').val(),
-      password: $('#js-password-signup').val();
+      password: $('#js-password-signup').val()
     }
     if (checkNames(names) === true) {
       if (checkPass(names.password) === true) {
