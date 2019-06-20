@@ -127,7 +127,7 @@ input[type=button], input[type=submit], button {
   border-color: #70B38A;
 }
 
-#js-no-account {
+#js-no-account, .blue {
   color: #0000EE;
 }
 
