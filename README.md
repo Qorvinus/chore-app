@@ -1,6 +1,6 @@
-# Welcome to my Chore App!
+# Welcome to Pay ME!
 
-Check out the Chore-App here: [Chore-App](https://protected-eyrie-51452.herokuapp.com)
+Check out Pay ME! here: [Pay Me!](https://protected-eyrie-51452.herokuapp.com)
 
 ## What do I do?
 
