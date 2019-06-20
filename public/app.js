@@ -12,6 +12,7 @@ function onLoginClick() {
 function renderLoginPage() {
     $('#js-main-container').html(generateLoginPage());
     onUserLogin();
+    noAccountClick();
 }
 
 function generateLoginPage() {
@@ -19,14 +20,24 @@ function generateLoginPage() {
     <section role="section" class="login-container col-8" id="js-login-conatiner">
     <div class="login-center">
       <form id="js-login" class="login">
+      <fieldset>
         <span class="username">User Name:<input id="js-username" type="text" name="username" class="center-input" autofocus></span>
         <span class="password">Password:<input id="js-password" type="password" name="password" class="center-input"></span>
         <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
+      </fieldset>
       </form>
+      <button type="button" id="js-no-account-button" class="button hover" >Don't have an account?  Sign up!</button>
     </div>
     <p class="js-error-message"></p>
     </section>
     `
+}
+
+function noAccountClick() {
+  $('#js-no-account-button').on('click', function(event) {
+    event.preventDefault();
+    renderSignUp();
+  })
 }
 
 function onUserLogin(username, password) {
