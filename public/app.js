@@ -186,7 +186,7 @@ function renderStartPage() {
 function generateStartPage() {
   return `
   <section role="section" id="js-start-container" class="start-container col-8">
-  <p>Welcome to the chore-app!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Clients", "Edit Chores" and "Logout".  </p>
+  <p>Welcome to Pay ME!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Chores" and "Logout".  </p>
         <ul id="js-instructions">
           <li>
             <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.  Once you're set up this is where you'll spend most of your time, logging chores and paying out allowances.
@@ -198,13 +198,10 @@ function generateStartPage() {
             <span class="bold">Add Chores:</span> Here you can add chores and give them their respective dollar value.
           </li>
           <li>
-            <span class="bold">Edit Clients:</span> If you misspelled one of your clients' names you can edit it here without worry of losing their data.
-          </li>
-          <li>
             <span class="bold">Edit Chores:</span> You can edit the chore name and the value.
           </li>
         </ul>
-        <p>We recommend you start off by adding clients then chores, we hope you enjoy our Chore-App and find it useful.</p>
+        <p>We recommend you start off by adding clients then chores, we hope you enjoy Pay ME! and find it useful.</p>
     <p class="js-error-message"></p>
   </section>
   `
@@ -458,14 +455,23 @@ function subtractClientTotal(client_id, newTotal, value, name) {
 function renderAfterPay(value, name) {
   const amount = parseFloat(`${value}`).toFixed(2);
   $('#js-main-container').html(generateAfterPay(amount, name));
+  okPaidClick();
 }
 
 function generateAfterPay(amount, name) {
   return `
     <section role="section" id="js-paid-container" class="paid-container col-8">
       <p>You have paid out $${amount} to ${name}.  Don't forget to pay them!</p>
+      <button type="button" id="js-paid-ok-button" class="hover button">OK</button>
     </section>
   `
+}
+
+function okPaidClick() {
+  $('#js-paid-ok-button').on('click', function(event) {
+    event.preventDefault();
+    renderHome();
+  });
 }
 
 // function onEditClientClick() {
