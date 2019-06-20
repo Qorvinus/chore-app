@@ -57,7 +57,7 @@ function userLogin(username, password) {
     if (res.ok) {
       return res.json();
     }
-    throw new Error(res.statusText);
+    throw new Error(res.message);
   })
   .then(response => {
     localStorage.setItem('authToken', response.authToken);
@@ -1000,24 +1000,6 @@ function renderSignUp() {
     signUpClick();
 }
 
-// function signUpClick() {
-//   $('#js-signup-button').on('click', function(event) {
-//     event.preventDefault();
-//     const firstName = $('#js-firstname-signup').val();
-//     const lastName = $('#js-lastname-signup').val();
-//     const username = $('#js-username-signup').val();
-//     const password = $('#js-password-signup').val();
-//     const requiredFields = [
-//       firstName, lastName, username, password
-//     ]
-//     if (checkSignUp(firstName, lastName, username, password) === false) {
-//       $('.js-error-message').text('Fields cannot be empty, and password must be at least 8 characters long.')
-//     } else {
-//       signUp(firstName, lastName, username, password);
-//     }
-//   });
-// }
-
 function signUpClick() {
   $('#js-signup-button').on('click', function(event) {
     event.preventDefault();
@@ -1067,14 +1049,6 @@ function checkPass(data) {
   }
 }
 
-// function checkSignUp(firstName, lastName, username, password) {
-//   if (firstName.lenth == 0 || lastName.lenth == 0 || username.lenth == 0 || password.length < 8) {
-//     return false;
-//   } else {
-//     return true;
-//   };
-// }
-
 function signUp(firstName, lastName, username, password) {
   const data = {
     firstName: firstName,
@@ -1095,7 +1069,7 @@ function signUp(firstName, lastName, username, password) {
     if (res.ok) {
       return res.json();
     }
-    throw new Error(res.statusText);
+    throw new Error(res.message);
   })
   .then(renderLoginPage())
   .catch(err => console.error('Error', err));
