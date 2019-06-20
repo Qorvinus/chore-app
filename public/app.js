@@ -221,8 +221,8 @@ function generateRenderHomeclients(data) {
         <label>
           <input type="radio" name="clients" value="${client[i]._id}" class="js-clients-home-radio" required />
             <span>${client[i].name}, Allowance: $${totalValue}</span>
-            <input type="image" src="/images/edit.png" alt="edit" class="client-edit-img hover" value="${client[i]._id}>
-            <input type="image" src="/images/delete.png" alt="delete" class="client-delete-img hover" value="${client[i]._id}>
+            <input type="image" src="/images/edit.png" alt="edit" class="client-edit-img hover" value="${client[i]._id}" />
+            <input type="image" src="/images/delete.png" alt="delete" class="client-delete-img hover" value="${client[i]._id}" />
         </label>
         </li>
         `);
