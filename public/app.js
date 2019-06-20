@@ -26,7 +26,7 @@ function generateLoginPage() {
         <input id="js-login-button" class="login-button hover" type="submit" value="Log in">
       </fieldset>
       </form>
-      <button type="button" id="js-no-account-button" class="button hover" >Don't have an account?  Sign up!</button>
+      <p>Don't have an account? <span id="js-no-account"><a href="#">Sign up!</a></span></p>
     </div>
     <p class="js-error-message"></p>
     </section>
@@ -34,7 +34,7 @@ function generateLoginPage() {
 }
 
 function noAccountClick() {
-  $('#js-no-account-button').on('click', function(event) {
+  $('#js-no-account').on('click', function(event) {
     event.preventDefault();
     renderSignUp();
   })
