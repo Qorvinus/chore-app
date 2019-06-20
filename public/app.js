@@ -1021,11 +1021,15 @@ function renderSignUp() {
 function signUpClick() {
   $('#js-signup-button').on('click', function(event) {
     event.preventDefault();
+    const firstName = $('#js-firstname-signup').val();
+    const lastName = $('#js-lastname-signup').val();
+    const username = $('#js-username-signup').val();
+    const password = $('#js-password-signup').val();
     const names = {
-      firstName: $('#js-firstname-signup').val(),
-      lastName: $('#js-lastname-signup').val(),
-      username: $('#js-username-signup').val(),
-      password: $('#js-password-signup').val()
+      'First Name': firstName,
+      'Last Name': lastName,
+      'User Name': username,
+      'password': password
     }
     if (checkNames(names) === true) {
       if (checkPass(names.password) === true) {
