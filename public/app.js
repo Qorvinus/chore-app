@@ -77,7 +77,6 @@ function prepareDashboard() {
   onAddClientClick();
   onAddChoreClick();
   onEditChoreClick();
-  onEditClientClick();
   onLogOutClick();
 }
 
@@ -469,70 +468,70 @@ function generateAfterPay(amount, name) {
   `
 }
 
-function onEditClientClick() {
-  $('.js-go-edit-client-button').on('click', function(event) {
-    event.preventDefault();
-    renderEditClient();
-  })
-}
+// function onEditClientClick() {
+//   $('.js-go-edit-client-button').on('click', function(event) {
+//     event.preventDefault();
+//     renderEditClient();
+//   })
+// }
 
-function renderEditClient() {
-  $('#js-main-container').html(generateRenderEditClient());
-    getUserInfo(renderClient);
-    onClientCheck();
-}
+// function renderEditClient() {
+//   $('#js-main-container').html(generateRenderEditClient());
+//     getUserInfo(renderClient);
+//     onClientCheck();
+// }
 
-function generateRenderEditClient() {
-  return `
-    <section role="section" class="edit-client-container col-8" id="js-edit-client-container">
-      <p>Select a client to either edit or delete.</p>
-      <div>Clients:</div>
-      <form>
-        <fieldset>
-          <ul id="js-render-clients-list"></ul>
-          <input type="button" value="Edit" class="js-client-edit-button hover button">
-          <input type="button" value="Delete" class="js-client-delete-button hover">
-        </fieldset>
-      </form>
-      <p class="js-error-message"></p>
-    </section>
-    `
-}
+// function generateRenderEditClient() {
+//   return `
+//     <section role="section" class="edit-client-container col-8" id="js-edit-client-container">
+//       <p>Select a client to either edit or delete.</p>
+//       <div>Clients:</div>
+//       <form>
+//         <fieldset>
+//           <ul id="js-render-clients-list"></ul>
+//           <input type="button" value="Edit" class="js-client-edit-button hover button">
+//           <input type="button" value="Delete" class="js-client-delete-button hover">
+//         </fieldset>
+//       </form>
+//       <p class="js-error-message"></p>
+//     </section>
+//     `
+// }
 
-function renderClient(response) {
-  const data = response.client;
-  for (let i = 0; i < data.length; i++) {
-    let totalValue = parseFloat(`${data[i].totalValue}`).toFixed(2);
-    $('#js-render-clients-list').append(`
-      <li>
-      <label>
-        <input type="radio" name="clients" value="${data[i]._id}" class="js-client-radio" required />
-        <span>${data[i].name}, Total Amount: $${totalValue}</span>
-      </label>
-      </li>
-      `);
-    };
-}
+// function renderClient(response) {
+//   const data = response.client;
+//   for (let i = 0; i < data.length; i++) {
+//     let totalValue = parseFloat(`${data[i].totalValue}`).toFixed(2);
+//     $('#js-render-clients-list').append(`
+//       <li>
+//       <label>
+//         <input type="radio" name="clients" value="${data[i]._id}" class="js-client-radio" required />
+//         <span>${data[i].name}, Total Amount: $${totalValue}</span>
+//       </label>
+//       </li>
+//       `);
+//     };
+// }
 
-function onClientCheck() {
-  $('#js-render-clients-list').change('.js-client-radio', function() {
-    checkClientSelection();
-  });
-}
+// function onClientCheck() {
+//   $('#js-render-clients-list').change('.js-client-radio', function() {
+//     checkClientSelection();
+//   });
+// }
+//
+// function checkClientSelection() {
+//   let selection = $('input:checked');
+//   let id = selection.val();
+//   onEditClientPageClick(id);
+//   onDeleteClient(id);
+// }
 
-function checkClientSelection() {
-  let selection = $('input:checked');
-  let id = selection.val();
-  onEditClientPageClick(id);
-  onDeleteClient(id);
-}
-
-function onEditClientPageClick(client_id) {
-  $('.js-client-edit-button').on('click', function(event) {
-    event.preventDefault();
-    getClientInfo(client_id, renderEditClientPage);
-  });
-}
+// function onEditClientPageClick(client_id) {
+//   $('.js-client-edit-button').on('click', function(event) {
+//     event.preventDefault();
+//     getClientInfo(client_id, renderEditClientPage);
+//   });
+// }
 
 function renderEditClientPage(data) {
   const client_id = data.id;
@@ -583,7 +582,7 @@ function updateClient(client_id, editName) {
       'Content-Type': 'application/json'
     }
   })
-  .then(renderEditClient())
+  .then(renderHome())
   .catch(err => {
     $('.js-error-message').text(`Something went wrong: ${err.message}`);
   });
@@ -593,12 +592,12 @@ function checkClientValue(name) {
   return name.length == 0;
 }
 
-function onDeleteClient(client_id) {
-  $('.js-client-delete-button').on('click', function(event) {
-    event.preventDefault();
-    deleteClient(client_id);
-  });
-}
+// function onDeleteClient(client_id) {
+//   $('.js-client-delete-button').on('click', function(event) {
+//     event.preventDefault();
+//     deleteClient(client_id);
+//   });
+// }
 
 function deleteClient(client_id) {
     const url = apiUrl + `/api/users/client/${client_id}`;
@@ -610,7 +609,7 @@ function deleteClient(client_id) {
         'Content-Type': 'application/json'
       }
     })
-    .then(renderEditClient())
+    .then(renderHome())
     .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
     });
