@@ -1051,9 +1051,9 @@ function signUpClick() {
       let missing = checkNames(names);
       $('.js-error-message').text(`${missing} cannot be empty.`)
     }
-    }
   })
 }
+
 
 function checkNames(names) {
   let missing = [];
