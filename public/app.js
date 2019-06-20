@@ -97,6 +97,7 @@ function onLogOut() {
         'Content-Type': 'application/json'
       }
   })
+  location.reload();
 }
 
 function setNav() {
