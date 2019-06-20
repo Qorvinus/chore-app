@@ -97,15 +97,6 @@ function onLogOut() {
         'Content-Type': 'application/json'
       }
   })
-  .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
-  .catch(err => {
-      $('.js-error-message').text(`Something went wrong: ${err.message}`);
-    });
 }
 
 function setNav() {
@@ -317,12 +308,6 @@ function addTotalValue(client_id, newTotal) {
       'Content-Type': 'application/json'
     }
   })
-  .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error(res.statusText);
-    })
   .then(getClientInfo(client_id, logAnotherChore))
   .catch(err => {
       $('.js-error-message').text(`Something went wrong: ${err.message}`);
