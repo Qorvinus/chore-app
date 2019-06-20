@@ -203,6 +203,8 @@ function generateRenderHomeclients(data) {
         <label>
           <input type="radio" name="clients" value="${client[i]._id}" class="js-clients-home-radio" required />
             <span>${client[i].name}, Allowance: $${totalValue}</span>
+            <input type="image" src="/images/edit.png" alt="edit" class="client-edit-img hover tooltip"><span class="tooltiptext">Edit</span>
+            <input type="image" src="/images/delete.png" alt="delete" class="client-delete-img hover tooltip"><span class="tooltiptext">Delete</span>
         </label>
         </li>
         `);
@@ -1067,11 +1069,11 @@ function signUp(firstName, lastName, username, password) {
   })
   .then(res => {
     if (res.ok) {
-      return res.json();
+      renderLoginPage();
+    } else {
+      $('.js-error-message').text('Username is already taken.')
     }
-    throw new Error(res.message);
   })
-  .then(renderLoginPage())
   .catch(err => console.error('Error', err));
 }
 
