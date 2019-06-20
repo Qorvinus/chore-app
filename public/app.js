@@ -1190,7 +1190,7 @@ function onGotItClick() {
 }
 
 function checkForToken() {
-  if !(localStorage.getItem('authToken') === null) {
+  if (localStorage.getItem('authToken') !=== null) {
     prepareDashboard();
   };
 }
