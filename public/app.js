@@ -1151,6 +1151,11 @@ function renderDemoWelcome() {
   $('#js-main-container').html(generateDemoWelcome());
   setNav();
   onGotItClick();
+  goHomeClick();
+  onAddClientClick();
+  onAddChoreClick();
+  onEditChoreClick();
+  onLogOutClick();
 }
 
 function generateDemoWelcome() {
