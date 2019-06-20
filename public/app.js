@@ -112,8 +112,6 @@ function renderHome() {
     getUserInfo(renderHomeClients);
     onLogChorePageClick();
     onPayPageClick();
-    onClientDelete();
-    onClientEdit();
 }
 
 function onClientDelete() {
@@ -177,6 +175,8 @@ function renderHomeClients(data) {
       renderStartPage();
     } else {
       generateRenderHomeclients(data);
+      onClientDelete();
+      onClientEdit();
     }
 }
 
