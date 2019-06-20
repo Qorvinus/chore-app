@@ -112,6 +112,24 @@ function renderHome() {
     getUserInfo(renderHomeClients);
     onLogChorePageClick();
     onPayPageClick();
+    onClientDelete();
+    onClientEdit();
+}
+
+function onClientDelete() {
+  $('.client-delete-img').on('click', function(event) {
+    event.preventDefault();
+    let id = $(this).val();
+    deleteClient(id);
+  })
+}
+
+function onClientEdit() {
+  $('.client-edit-img').on('click', function(event) {
+    event.preventDefault();
+    let id = $(this).val();
+    getClientInfo(id, renderEditClientPage);
+  })
 }
 
 function generateRenderHome() {
@@ -203,8 +221,8 @@ function generateRenderHomeclients(data) {
         <label>
           <input type="radio" name="clients" value="${client[i]._id}" class="js-clients-home-radio" required />
             <span>${client[i].name}, Allowance: $${totalValue}</span>
-            <input type="image" src="/images/edit.png" alt="edit" class="client-edit-img hover">
-            <input type="image" src="/images/delete.png" alt="delete" class="client-delete-img hover">
+            <input type="image" src="/images/edit.png" alt="edit" class="client-edit-img hover" value="${client[i]._id}>
+            <input type="image" src="/images/delete.png" alt="delete" class="client-delete-img hover" value="${client[i]._id}>
         </label>
         </li>
         `);
