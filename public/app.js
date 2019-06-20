@@ -67,7 +67,7 @@ function userLogin(username, password) {
 }
 
 function renderLoginError(err) {
-  $('.js-error-message').text(err.message);
+  $('.js-error-message').text('Incorrect Username or Password.');
 }
 
 function prepareDashboard() {
