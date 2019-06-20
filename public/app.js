@@ -1145,7 +1145,7 @@ function renderDemoWelcome() {
 function generateDemoWelcome() {
   return `
   <section role="section" id="js-demo-welcome-container" class="demo-welcome-container col-8">
-  <p>Welcome to the chore-app!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Clients", "Edit Chores" and "Logout".  </p>
+  <p>Welcome to Pay ME!  In the navigation bar you will find "Home", "Add Clients", "Add Chores", "Edit Chores" and "Logout".  </p>
         <ul id="js-instructions">
           <li>
             <span class="bold">Home:</span> This is where you'll log chores and pay out allowances.  Once you're set up this is where you'll spend most of your time, logging chores and paying out allowances.
@@ -1155,9 +1155,6 @@ function generateDemoWelcome() {
           </li>
           <li>
             <span class="bold">Add Chores:</span> Here you can add chores and give them their respective dollar value.
-          </li>
-          <li>
-            <span class="bold">Edit Clients:</span> If you misspelled one of your clients' names you can edit it here without worry of losing their data.
           </li>
           <li>
             <span class="bold">Edit Chores:</span> You can edit the chore name and the value.
