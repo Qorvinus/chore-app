@@ -127,12 +127,8 @@ input[type=button], input[type=submit], button {
   border-color: #70B38A;
 }
 
-#js-no-account-button {
-  height: 2rem;
-  width: 8rem;
-  background: #BAFFD4;
-  border-radius: 5px;
-  border-color: #70B38A;
+#js-no-account {
+  color: #0000EE;
 }
 
 input[type=text], input[type=number], input[type=password] {
